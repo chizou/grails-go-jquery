@@ -9,7 +9,7 @@ rm go1.4.2.linux-amd64.tar.gz
 
 #cp gwp/Chapter_1_Go_And_Web_Applications/first_webapp/server.go src/first_webapp
 export GOROOT=/usr/local/go
-export GOPATH=/home/ec2-user/gocontainer
+export GOPATH=/home/ec2-user/grails-go
 export PATH=$PATH:$GOROOT/bin
 go install jquery
 /home/ec2-user/bin/jquery
