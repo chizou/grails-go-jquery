@@ -51,10 +51,67 @@ package main
 
  function getMessages2() {
   $.post('status', {}, function(r) {
-   console.log('zzz');
-   paper.text(200, 200, 'para hacer que tus ninos lleguen');
-   paper.text(200, 400, r);
-  });
+   var foox = JSON.parse(r)
+   r = foox.dotStatus
+   t = foox.dotDuration
+   v = foox.squareHealth
+   w = foox.dotCompletion
+   paper.text(200, 400, w);
+   var THROWAWAY_BR_CHARS = 0
+   var ROWS_PER_SQUARE = Math.sqrt(r.length) //10
+   var COLS_PER_SQUARE = ROWS_PER_SQUARE
+   var ORIGINX = 40
+   var ORIGINY = 100
+   var STOPLIGHT_YELLOW = '#FAD201'
+   var STOPLIGHT_GREEN = '#27E833'
+   var MEDIUM_GREEN =    '#27C833'
+   var DARK_GREEN =      '#27A833'
+   for (row = 0; row < ROWS_PER_SQUARE; row++) {
+    for (col = 0; col < COLS_PER_SQUARE; col++) {
+       var stroke
+       var fill
+       var filltext = ''
+       var substring_start = THROWAWAY_BR_CHARS+row*ROWS_PER_SQUARE+col
+       var rchar = r.substring(substring_start, substring_start+1)
+       if (rchar == '0') {
+           stroke = "white"
+           fill = "white"
+       }
+       if (rchar == '1') {
+           stroke = STOPLIGHT_YELLOW
+           fill = "white"
+       }
+       if (rchar == '2') {
+           stroke = STOPLIGHT_YELLOW
+           fill = STOPLIGHT_YELLOW
+       }
+       if (rchar == '4') {
+           fill = 'pink'
+           filltext = 'error'
+           var tchar = t.substring(substring_start, substring_start+1)
+           if ((tchar == '0') ||
+               (tchar == '1')) {
+               fill = DARK_GREEN
+               filltext = 'S'
+           }
+           if (tchar == '2') {
+               fill = MEDIUM_GREEN
+               filltext = 'M'
+           }
+           if (tchar == '3') {
+               fill = STOPLIGHT_GREEN
+               filltext = 'L'
+           }
+           stroke = fill
+       }
+       paper.circle(ORIGINX+46*col, ORIGINY+46*row, 20).attr({ "stroke": stroke, "fill": fill });
+       paper.text(ORIGINX+46*col, ORIGINY+46*row, filltext)
+
+    }
+   }
+  },'html');
+
+//  });
  }
  function getMessages1() {
 
@@ -141,7 +198,9 @@ package main
  }
 
  func greenstatus(w http.ResponseWriter, r *http.Request) {
-   w.Write([]byte("<h2>greenstatus<h2>"))
+   //byt := []byte(`{"num":6.13,"strs":["a","b"]}`)
+   byt := []byte(`{"dotStatus":"1124012411241124","dotDuration":"1122331122331122", "squareHealth":"pz-jobmanager?", "dotCompletion":"unused"}`)
+   w.Write(byt)
  }
 
  func receiveAjax(w http.ResponseWriter, r *http.Request) {
