@@ -23,7 +23,8 @@ func test8079() bool {
     }
     resp, err := client.Get("http://localhost:8079")
     if err != nil {
-        fmt.Println("Something went wrong")
+        fmt.Println("Something went wrong for 8079")
+        return false
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
@@ -39,7 +40,8 @@ func test8081() bool {
     }
     resp, err := client.Get("http://localhost:8081")
     if err != nil {
-        fmt.Println("Something went wrong")
+        fmt.Println("Something went wrong for 8081")
+        return false
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
@@ -54,6 +56,7 @@ func test8083() bool { timeout := time.Duration(3 * time.Second)
     resp, err := client.Get("http://localhost:8083")
     if err != nil {
         fmt.Println("Something went wrong for 8083")
+        return false
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
@@ -68,7 +71,8 @@ func test8084() bool {
     }
     resp, err := client.Get("http://localhost:8084")
     if err != nil {
-        fmt.Println("Something went wrong")
+        fmt.Println("Something went wrong for 8084")
+        return false
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
@@ -83,7 +87,8 @@ func test8085() bool {
     }
     resp, err := client.Get("http://localhost:8085")
     if err != nil {
-        fmt.Println("Something went wrong")
+        fmt.Println("Something went wrong for 8085")
+        return false
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
@@ -98,7 +103,8 @@ func test8088() bool {
     }
     resp, err := client.Get("http://localhost:8088")
     if err != nil {
-        fmt.Println("Something went wrong")
+        fmt.Println("Something went wrong for 8088")
+        return false
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
@@ -289,9 +295,9 @@ func myIPWithTimeout() string {
        `nexus: ` + strconv.FormatBool(test8079()) +  ` \n` +
        `gateway: ` + strconv.FormatBool(test8081()) +  ` \n` +
        `jobmanager: ` + strconv.FormatBool(test8083()) +  ` \n` +
-//       `Loader: ` + strconv.FormatBool(test8084()) +  ` \n` +
-//       `access: ` + strconv.FormatBool(test8085()) +  ` \n` +
-//       `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n` +
+       `Loader: ` + strconv.FormatBool(test8084()) +  ` \n` +
+       `access: ` + strconv.FormatBool(test8085()) +  ` \n` +
+       `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n` +
        `"}`)
    //byt := []byte(`{"dotStatus":"1124012411241124","dotDuration":"1122331122331122", "squareHealth":"pz-jobmanager?", "dotCompletion":"unused"}`)
    w.Write(byu)
