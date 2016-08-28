@@ -4,11 +4,35 @@ package main
   "fmt"
   "io/ioutil"
   "net/http"
+  "strconv"
+  "strings"
+  "time"
  )
 
-func myIP() string {
-    //resp, err := http.Get("http://localhost:8080/alabanza/praise")
-    resp, err := http.Get("http://169.254.169.254/latest/meta-data/public-ipv4")
+/*
+*/
+func test8079() bool {
+    timeout := time.Duration(3 * time.Second)
+    client := http.Client {
+        Timeout: timeout,
+    }
+    resp, err := client.Get("http://localhost:8079")
+    if err != nil {
+        fmt.Println("Something went wrong")
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Printf("Body: %s\n", body)
+    fmt.Printf("Error: %v\n", err)
+    return strings.Contains(string(body), `Nexus`)
+}
+
+func myIPWithTimeout() string {
+    timeout := time.Duration(3 * time.Second)
+    client := http.Client {
+        Timeout: timeout,
+    }
+    resp, err := client.Get("http://169.254.169.254/latest/meta-data/public-ipv4")
     if err != nil {
         fmt.Println("Something went wrong")
     }
@@ -182,7 +206,7 @@ func myIP() string {
    byu := []byte(`{"dotStatus":"1124012411241124", ` +
        `"dotDuration":"1122331122331122", ` + 
        `"squareHealth":"pz-jobmanager?", ` +
-       `"dotCompletion":"` + myIP()/*"unused"*/+ `"}`)
+       `"dotCompletion":"` + myIPWithTimeout() + strconv.FormatBool(test8079()) + `"}`)
    //byt := []byte(`{"dotStatus":"1124012411241124","dotDuration":"1122331122331122", "squareHealth":"pz-jobmanager?", "dotCompletion":"unused"}`)
    w.Write(byu)
  }
