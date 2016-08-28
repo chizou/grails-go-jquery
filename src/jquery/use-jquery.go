@@ -6,8 +6,9 @@ package main
   "net/http"
  )
 
-func mycurl() {
-    resp, err := http.Get("http://52.42.17.198:8080/alabanza/praise")
+func myIP() string {
+    //resp, err := http.Get("http://localhost:8080/alabanza/praise")
+    resp, err := http.Get("http://169.254.169.254/latest/meta-data/public-ipv4")
     if err != nil {
         fmt.Println("Something went wrong")
     }
@@ -15,6 +16,7 @@ func mycurl() {
     body, err := ioutil.ReadAll(resp.Body)
     fmt.Printf("Body: %s\n", body)
     fmt.Printf("Error: %v\n", err)
+    return string(body)
 }
 
  func Home(w http.ResponseWriter, r *http.Request) {
@@ -177,9 +179,12 @@ func mycurl() {
  }
 
  func greenstatus(w http.ResponseWriter, r *http.Request) {
-   //byt := []byte(`{"num":6.13,"strs":["a","b"]}`)
-   byt := []byte(`{"dotStatus":"1124012411241124","dotDuration":"1122331122331122", "squareHealth":"pz-jobmanager?", "dotCompletion":"unused"}`)
-   w.Write(byt)
+   byu := []byte(`{"dotStatus":"1124012411241124", ` +
+       `"dotDuration":"1122331122331122", ` + 
+       `"squareHealth":"pz-jobmanager?", ` +
+       `"dotCompletion":"` + myIP()/*"unused"*/+ `"}`)
+   //byt := []byte(`{"dotStatus":"1124012411241124","dotDuration":"1122331122331122", "squareHealth":"pz-jobmanager?", "dotCompletion":"unused"}`)
+   w.Write(byu)
  }
 
  func receiveAjax(w http.ResponseWriter, r *http.Request) {
@@ -196,8 +201,7 @@ func mycurl() {
   mux.HandleFunc("/", Home)
   mux.HandleFunc("/receive", receiveAjax)
   mux.HandleFunc("/status", greenstatus)
-  mycurl()
-  http.ListenAndServe(":8080", mux)
+  http.ListenAndServe(":8077", mux)
  }
 
 
