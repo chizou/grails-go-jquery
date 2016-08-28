@@ -2,43 +2,22 @@ package main
 
  import (
   "fmt"
+  "io/ioutil"
   "net/http"
  )
 
+func mycurl() {
+    resp, err := http.Get("http://52.42.17.198:8080/alabanza/praise")
+    if err != nil {
+        fmt.Println("Something went wrong")
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Printf("Body: %s\n", body)
+    fmt.Printf("Error: %v\n", err)
+}
+
  func Home(w http.ResponseWriter, r *http.Request) {
-/*
-  html2 := `<head>	
- <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-
-                    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
-              </head>    
-                  <html><body>
-                  <h1>Golang Jquery AJAX example</h1>
-
-                  <div id='result'><h3>before</h3></div><br><br>
-
-                  <input id='ajax_btn' type='button' value='POST via AJAX to Golang server'>
-                  </body></html>
-
-                   <script>
-
-                   $(document).ready(function () { 
-                         $('#ajax_btn').click(function () {
-                             $.ajax({
-                               url: 'receive',
-                               type: 'post',
-                               dataType: 'html',
-                               data : { ajax_post_data: 'hello'},
-                               success : function(data) {
-                                 alert('ajax data posted');
-                                 $('#result').html(data);
-                               },
-                             });
-                          });
-                    });
-
-                   </script>`
-*/
   html := `<head>	
  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 
@@ -217,7 +196,7 @@ package main
   mux.HandleFunc("/", Home)
   mux.HandleFunc("/receive", receiveAjax)
   mux.HandleFunc("/status", greenstatus)
-
+  mycurl()
   http.ListenAndServe(":8080", mux)
  }
 
