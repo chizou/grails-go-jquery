@@ -10,6 +10,11 @@ package main
  )
 
 /*
+        myprocessAsText.indexOf('pz-gateway') > 0
+        myprocessAsText.indexOf('pz-jobmanager') > 0
+        myprocessAsText.indexOf('Loader') > 0
+        myprocessAsText.indexOf('pz-access') > 0
+        myprocessAsText.indexOf('Piazza Service Controller') > 0
 */
 func test8079() bool {
     timeout := time.Duration(3 * time.Second)
@@ -27,6 +32,80 @@ func test8079() bool {
     return strings.Contains(string(body), `Nexus`)
 }
 
+func test8081() bool {
+    timeout := time.Duration(3 * time.Second)
+    client := http.Client {
+        Timeout: timeout,
+    }
+    resp, err := client.Get("http://localhost:8081")
+    if err != nil {
+        fmt.Println("Something went wrong")
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Printf("Body: %s\n", body)
+    fmt.Printf("Error: %v\n", err)
+    return strings.Contains(string(body), `pz-gateway`)
+}
+func test8083() bool { timeout := time.Duration(3 * time.Second)
+    client := http.Client {
+        Timeout: timeout,
+    }
+    resp, err := client.Get("http://localhost:8083")
+    if err != nil {
+        fmt.Println("Something went wrong for 8083")
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Printf("Body: %s\n", body)
+    fmt.Printf("Error: %v\n", err)
+    return strings.Contains(string(body), `pz-jobmanager`)
+}
+func test8084() bool {
+    timeout := time.Duration(3 * time.Second)
+    client := http.Client {
+        Timeout: timeout,
+    }
+    resp, err := client.Get("http://localhost:8084")
+    if err != nil {
+        fmt.Println("Something went wrong")
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Printf("Body: %s\n", body)
+    fmt.Printf("Error: %v\n", err)
+    return strings.Contains(string(body), `Loader`)
+}
+func test8085() bool {
+    timeout := time.Duration(3 * time.Second)
+    client := http.Client {
+        Timeout: timeout,
+    }
+    resp, err := client.Get("http://localhost:8085")
+    if err != nil {
+        fmt.Println("Something went wrong")
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Printf("Body: %s\n", body)
+    fmt.Printf("Error: %v\n", err)
+    return strings.Contains(string(body), `pz-access`)
+}
+func test8088() bool {
+    timeout := time.Duration(3 * time.Second)
+    client := http.Client {
+        Timeout: timeout,
+    }
+    resp, err := client.Get("http://localhost:8088")
+    if err != nil {
+        fmt.Println("Something went wrong")
+    }
+    defer resp.Body.Close()
+    body, err := ioutil.ReadAll(resp.Body)
+    fmt.Printf("Body: %s\n", body)
+    fmt.Printf("Error: %v\n", err)
+    return strings.Contains(string(body), `Piazza Service Controller`)
+}
 func myIPWithTimeout() string {
     timeout := time.Duration(3 * time.Second)
     client := http.Client {
@@ -206,7 +285,14 @@ func myIPWithTimeout() string {
    byu := []byte(`{"dotStatus":"1124012411241124", ` +
        `"dotDuration":"1122331122331122", ` + 
        `"squareHealth":"pz-jobmanager?", ` +
-       `"dotCompletion":"` + myIPWithTimeout() + strconv.FormatBool(test8079()) + `"}`)
+       `"dotCompletion":"` + myIPWithTimeout() + `\n` +
+       `nexus: ` + strconv.FormatBool(test8079()) +  ` \n` +
+       `gateway: ` + strconv.FormatBool(test8081()) +  ` \n` +
+       `jobmanager: ` + strconv.FormatBool(test8083()) +  ` \n` +
+//       `Loader: ` + strconv.FormatBool(test8084()) +  ` \n` +
+//       `access: ` + strconv.FormatBool(test8085()) +  ` \n` +
+//       `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n` +
+       `"}`)
    //byt := []byte(`{"dotStatus":"1124012411241124","dotDuration":"1122331122331122", "squareHealth":"pz-jobmanager?", "dotCompletion":"unused"}`)
    w.Write(byu)
  }
@@ -228,4 +314,59 @@ func myIPWithTimeout() string {
   http.ListenAndServe(":8077", mux)
  }
 
+/*
+class HealthArray {
+    def myip
+    def port8079
+    def port8081
+    def port8083
+    def port8084
+    def port8085
+    def port8088
 
+    HealthArray() {
+       myip = myIP()
+       port8079 = test8079()
+       port8081 = test8081()
+       port8083 = test8083()
+       port8084 = test8084()
+       port8085 = test8085()
+       port8088 = test8088()
+    }
+
+
+    boolean test8081() {
+        def myprocess = [ 'bash', '-c', "curl --max-time 3 http://$myip:8081" ].execute()
+        myprocess.waitFor()
+        String myprocessAsText = myprocess.text
+        myprocessAsText.indexOf('pz-gateway') > 0
+    }
+
+    boolean test8083() {
+        def myprocess = [ 'bash', '-c', "curl --max-time 3 http://$myip:8083" ].execute()
+        myprocess.waitFor()
+        String myprocessAsText = myprocess.text
+        myprocessAsText.indexOf('pz-jobmanager') > 0
+    }
+
+    boolean test8084() {
+        def myprocess = [ 'bash', '-c', "curl --max-time 3 http://$myip:8084" ].execute()
+        myprocess.waitFor()
+        String myprocessAsText = myprocess.text
+        myprocessAsText.indexOf('Loader') > 0
+    }
+
+    boolean test8085() {
+        def myprocess = [ 'bash', '-c', "curl --max-time 3 http://$myip:8085" ].execute()
+        myprocess.waitFor()
+        String myprocessAsText = myprocess.text
+        myprocessAsText.indexOf('pz-access') > 0
+    }
+
+    boolean test8088() {
+        def myprocess = [ 'bash', '-c', "curl --max-time 3 http://$myip:8088" ].execute()
+        myprocess.waitFor()
+        String myprocessAsText = myprocess.text
+        myprocessAsText.indexOf('Piazza Service Controller') > 0
+    }
+*/
