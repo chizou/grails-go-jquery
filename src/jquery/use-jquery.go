@@ -317,9 +317,11 @@ func myIPWithTimeout() string {
 func NewHealthArray() *HealthArray {
     p := new(HealthArray)
     p.port8079 = test8079()
-//    p.myip = 
-//    p.test8079 = 
-//       `Loader: ` + strconv.FormatBool(test8084()) +  ` \n` +
+    p.port8081 = test8081()
+    p.port8083 = test8083()
+    p.port8084 = test8084()
+    p.port8085 = test8085()
+    p.port8088 = test8088()
     return p
 }
 
