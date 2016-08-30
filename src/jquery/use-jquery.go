@@ -295,35 +295,55 @@ type TestVector struct {
     EXTERNAL_USER_SERVICE string
     PIAZZA_PRIME_BOX string
     id1 string
+    id2 string
+    id3 string
+    id4 string
 }
 
 func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
     p := new(TestVector)
     p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8078/green/timer/external"
     p.PIAZZA_PRIME_BOX = piazzaBox
-    p.id1 = "sencillo"
+    p.id1 = ""
+    p.id2 = ""
+    p.id3 = ""
+    p.id4 = ""
     fmt.Println(p.EXTERNAL_USER_SERVICE + p.PIAZZA_PRIME_BOX)
     return p
 }
-/*
-        if (id1 == null) {
-            id1 = pz1()
-            if (id1) id2 = pz2()
-            if (id2) id3 = pz3()
-            if (id3) id4 = pz4()
-        }
 
-*/
 func nextStep(p TestVector) *TestVector {
     if p.id1 == "" {
         p.id1 = pz1()
+
+        if p.id1 != "" {
+            p.id2 = pz2()
+        }
+        if p.id2 != "" {
+            p.id3 = pz3()
+        }
+        if p.id3 != "" {
+            p.id4 = pz4()
+        }
     }
 
     return &p
 }
 
 func pz1() string {
-    return "mochila"
+    return "I'm pz1()"
+}
+
+func pz2() string {
+    return "I'm pz2()"
+}
+
+func pz3() string {
+    return "I'm pz3()"
+}
+
+func pz4() string {
+    return "I'm pz4()"
 }
 
 func NewHealthArray() *HealthArray {
