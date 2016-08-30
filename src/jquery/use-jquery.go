@@ -147,7 +147,7 @@ func myIPWithTimeout() string {
   iamworker := workers
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     q[i] = NewTestVector(piazzaBox, externalUserService)
-    q[i] = nextStep(q[i])
+    q[i] = nextStep(*q[i])
   }
   fmt.Printf("Work(%s,%s,%d)", piazzaBox, externalUserService, iamworker)
 /*
@@ -301,6 +301,7 @@ func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
     p := new(TestVector)
     p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8078/green/timer/external"
     p.PIAZZA_PRIME_BOX = piazzaBox
+    p.id1 = "sencillo"
     fmt.Println(p.EXTERNAL_USER_SERVICE + p.PIAZZA_PRIME_BOX)
     return p
 }
@@ -313,8 +314,16 @@ func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
         }
 
 */
-func nextStep(p *TestVector) *TestVector {
-    return p
+func nextStep(p TestVector) *TestVector {
+    if p.id1 == "" {
+        p.id1 = pz1()
+    }
+
+    return &p
+}
+
+func pz1() string {
+    return "mochila"
 }
 
 func NewHealthArray() *HealthArray {
