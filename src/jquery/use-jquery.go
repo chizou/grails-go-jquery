@@ -9,11 +9,6 @@ package main
   "time"
  )
 
-type TestVector struct {
-    EXTERNAL_USER_SERVICE string
-    PIAZZA_PRIME_BOX string
-}
-
 type HealthArray struct {
     myip string
     port8079 bool
@@ -152,6 +147,7 @@ func myIPWithTimeout() string {
   iamworker := workers
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     q[i] = NewTestVector(piazzaBox, externalUserService)
+    q[i] = nextStep(q[i])
   }
   fmt.Printf("Work(%s,%s,%d)", piazzaBox, externalUserService, iamworker)
 /*
@@ -295,11 +291,29 @@ func myIPWithTimeout() string {
   }
  }
 
+type TestVector struct {
+    EXTERNAL_USER_SERVICE string
+    PIAZZA_PRIME_BOX string
+    id1 string
+}
+
 func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
     p := new(TestVector)
     p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8078/green/timer/external"
     p.PIAZZA_PRIME_BOX = piazzaBox
     fmt.Println(p.EXTERNAL_USER_SERVICE + p.PIAZZA_PRIME_BOX)
+    return p
+}
+/*
+        if (id1 == null) {
+            id1 = pz1()
+            if (id1) id2 = pz2()
+            if (id2) id3 = pz3()
+            if (id3) id4 = pz4()
+        }
+
+*/
+func nextStep(p *TestVector) *TestVector {
     return p
 }
 
