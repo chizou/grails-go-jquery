@@ -9,6 +9,11 @@ package main
   "time"
  )
 
+type TestVector struct {
+    EXTERNAL_USER_SERVICE string
+    PIAZZA_PRIME_BOX string
+}
+
 type HealthArray struct {
     myip string
     port8079 bool
@@ -131,11 +136,55 @@ func myIPWithTimeout() string {
     return string(body)
 }
 
+ func Work(w http.ResponseWriter, r *http.Request) {
+  piazzaBox := /*(params.containers) ?: */myIPWithTimeout()
+  externalUserService := myIPWithTimeout()
+  workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
+  const NUM_COLORFUL_DISPLAY_DOTS = 100
+  var q [NUM_COLORFUL_DISPLAY_DOTS] *TestVector
+
+
+  //work() is invoked from the gsp page each time the browser is refreshed.
+  //we don't want multiple workers, so each worker gets a worker number.
+  //if the worker number doesn't match the number of workers, then
+  //the worker exits.
+  workers++
+  iamworker := workers
+  for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
+    q[i] = NewTestVector(piazzaBox, externalUserService)
+  }
+  fmt.Printf("Work(%s,%s,%d)", piazzaBox, externalUserService, iamworker)
+/*
+        //s/m: this can be made more groovy, right? spread operator?
+        for (int i=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++) {
+            q[i] = new TestVector(piazzaBox, externalUserService)
+        }
+
+        //This is an arbitrarily large number. We might as well loop forever.
+        def MAX_ITERATION_TO_CALL_TEST_VECTOR = 64000
+
+        (0..MAX_ITERATION_TO_CALL_TEST_VECTOR).each {
+            if ((iamworker == workers) && (!booleanOfDotCompletion())) {
+                def HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN = 10
+                if (it % HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN == 0) {
+                    qhealth[0] = new HealthArray()
+                }
+                for (int i=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++) {
+                    q[i].nextstep()
+                }
+            }
+        }
+        render "work()#$iamworker exits (num workers is $workers)"
+*/
+ }
+
  func Home(w http.ResponseWriter, r *http.Request) {
   html := `<head>	
- <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+ <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js">
+ </script>
 
- <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
+ <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'>
+ </script>
 
  </head>
  <body>
@@ -199,79 +248,12 @@ func myIPWithTimeout() string {
        }
        paper.circle(ORIGINX+46*col, ORIGINY+46*row, 20).attr({ "stroke": stroke, "fill": fill });
        paper.text(ORIGINX+46*col, ORIGINY+46*row, filltext)
-
     }
    }
   },'html');
-
-//  });
- }
- function getMessages1() {
-
-  $.post('/green/timer/status', {}, function(r) {
-   var foox = JSON.parse(r)
-   console.log(foox);
-   r = foox.dotStatus
-   t = foox.dotDuration
-   v = foox.squareHealth
-   w = foox.dotCompletion
-   $('#controllerresults').html(w + '<br>' + v);
-   var THROWAWAY_BR_CHARS = 0
-   var ROWS_PER_SQUARE = Math.sqrt(r.length) //10
-   var COLS_PER_SQUARE = ROWS_PER_SQUARE
-   var ORIGINX = 40
-   var ORIGINY = 100
-   var STOPLIGHT_YELLOW = '#FAD201'
-   var STOPLIGHT_GREEN = '#27E833'
-   var MEDIUM_GREEN =    '#27C833'
-   var DARK_GREEN =      '#27A833'
-   for (row = 0; row < ROWS_PER_SQUARE; row++) {
-    for (col = 0; col < COLS_PER_SQUARE; col++) {
-       var stroke
-       var fill
-       var filltext = ''
-       var substring_start = THROWAWAY_BR_CHARS+row*ROWS_PER_SQUARE+col
-       var rchar = r.substring(substring_start, substring_start+1)
-       if (rchar == '0') {
-           stroke = "white"
-           fill = "white"
-       }
-       if (rchar == '1') {
-           stroke = STOPLIGHT_YELLOW
-           fill = "white"
-       }
-       if (rchar == '2') {
-           stroke = STOPLIGHT_YELLOW
-           fill = STOPLIGHT_YELLOW
-       }
-       if (rchar == '4') {
-           fill = 'pink'
-           filltext = 'error'
-           var tchar = t.substring(substring_start, substring_start+1)
-           if ((tchar == '0') ||
-               (tchar == '1')) {
-               fill = DARK_GREEN
-               filltext = 'S'
-           }
-           if (tchar == '2') {
-               fill = MEDIUM_GREEN
-               filltext = 'M'
-           }
-           if (tchar == '3') {
-               fill = STOPLIGHT_GREEN
-               filltext = 'L'
-           }
-           stroke = fill
-       }
-       paper.circle(ORIGINX+46*col, ORIGINY+46*row, 20).attr({ "stroke": stroke, "fill": fill });
-       paper.text(ORIGINX+46*col, ORIGINY+46*row, filltext)
-    }
-   }
-  },'html');
-
  }
 
- $.post('/green/timer/work', {}, function(r) {
+ $.post('greentimerwork', {}, function(r) {
   //$('#workresults').html('This is urlBar.gsps work plus work result: ' + r);
  },'html');
 
@@ -302,7 +284,6 @@ func myIPWithTimeout() string {
        `access: ` + strconv.FormatBool(test8085()) +  ` \n` +
        `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n` +
        `"}`)
-   //byt := []byte(`{"dotStatus":"1124012411241124","dotDuration":"1122331122331122", "squareHealth":"pz-jobmanager?", "dotCompletion":"unused"}`)
    w.Write(byu)
  }
 
@@ -313,6 +294,14 @@ func myIPWithTimeout() string {
    w.Write([]byte("<h2>after<h2>"))
   }
  }
+
+func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
+    p := new(TestVector)
+    p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8078/green/timer/external"
+    p.PIAZZA_PRIME_BOX = piazzaBox
+    fmt.Println(p.EXTERNAL_USER_SERVICE + p.PIAZZA_PRIME_BOX)
+    return p
+}
 
 func NewHealthArray() *HealthArray {
     p := new(HealthArray)
@@ -326,36 +315,14 @@ func NewHealthArray() *HealthArray {
 }
 
  func main() {
+
   ha := NewHealthArray()
   fmt.Printf("test8079: %s\n", ha.port8079)
   // http.Handler
   mux := http.NewServeMux()
   mux.HandleFunc("/", Home)
+  mux.HandleFunc("/greentimerwork", Work)
   mux.HandleFunc("/receive", receiveAjax)
   mux.HandleFunc("/status", greenstatus)
   http.ListenAndServe(":8077", mux)
  }
-
-
-/*
-class HealthArray {
-    def myip
-    def port8079
-    def port8081
-    def port8083
-    def port8084
-    def port8085
-    def port8088
-
-    HealthArray() {
-       myip = myIP()
-       port8079 = test8079()
-       port8081 = test8081()
-       port8083 = test8083()
-       port8084 = test8084()
-       port8085 = test8085()
-       port8088 = test8088()
-    }
-
-
-*/
