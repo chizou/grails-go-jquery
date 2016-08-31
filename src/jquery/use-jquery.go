@@ -309,7 +309,7 @@ func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
     p.id2 = ""
     p.id3 = ""
     p.id4 = ""
-    fmt.Println(p.EXTERNAL_USER_SERVICE + p.PIAZZA_PRIME_BOX)
+    //fmt.Println(p.EXTERNAL_USER_SERVICE + p.PIAZZA_PRIME_BOX)
     return p
 }
 
@@ -353,23 +353,17 @@ if err != nil {
 	// handle err
 }
 defer resp.Body.Close()
-    body3, err3 := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    fmt.Printf("Error: %v\n", err3)
-    fmt.Printf("363: ")
-    var dat map[string]interface{}
-    if err := json.Unmarshal(body3, &dat); err != nil {
-        panic(err)
+    body3, err8 := ioutil.ReadAll(resp.Body)
+    if err8 != nil {
+        // handle err
     }
-    fmt.Println("364:")
-    fmt.Println(dat)
+    var dat map[string]interface{}
+    if err3 := json.Unmarshal(body3, &dat); err3 != nil {
+        panic(err3)
+    }
     data := dat["data"].(map[string]interface{})
-    fmt.Println("367:")
-    fmt.Println(data)
     foo := data["serviceId"]
-    fmt.Println(foo)
-    //str1 := strs[0].(string)
-    return string(body3) 
+    return foo.(string) 
 }
 /*
 {
@@ -381,24 +375,10 @@ defer resp.Body.Close()
 */
 func pz1(p TestVector) string {
     body2 := `{"url":"REPLACEME","method":"GET","contractUrl":"REPLACEME/","resourceMetadata":{"name":"Hello World Test","description":"Hello world test","classType":{"classification":"UNCLASSIFIED"}}}`
-    //groovy: body2 = body2.replaceAll('REPLACEME', p.EXTERNAL_USER_SERVICE)
     body2 = strings.Replace(body2, "REPLACEME", p.EXTERNAL_USER_SERVICE, -1)
-    fmt.Println(body2)
     pz1curlresult := pz1curl(p, body2)
-    fmt.Printf(pz1curlresult)
-/*
-
-        def myprocess2 = [ 'bash', '-c', "curl -v -k -X POST -H \"Content-Type: application/json\" -d '${body2}' http://$PIAZZA_PRIME_BOX:8081/service" ].execute()
-        myprocess2.waitFor()
-        String myprocess2AsText =  myprocess2?.text
-
-        def result2AsJson = null
-        try { result2AsJson = new JsonSlurper().parseText(myprocess2AsText) } catch(e) {}
-
-        result2AsJson
-
-*/
-    return "I'm pz1()"
+    fmt.Println(pz1curlresult)
+    return pz1curlresult 
 }
 
 func pz2() string {
