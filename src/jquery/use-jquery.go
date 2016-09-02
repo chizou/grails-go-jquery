@@ -158,30 +158,37 @@ func myIPWithTimeout() string {
     fmt.Println("1st pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
   }
+  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
+//cannot use q (type [16]*TestVector) as type []*TestVector in argument to stringOfDotStatusEachRepresentsAPiazzaJob
+
 
   time.Sleep(10 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("2nd pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
   }
+  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   time.Sleep(10 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("3rd pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
   }
+  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   time.Sleep(10 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("4th pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
   }
+  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   time.Sleep(10 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("5th pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
   }
+  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   fmt.Printf("Work(%s,%s,%d)", piazzaBox, externalUserService, iamworker)
 /*
@@ -208,6 +215,98 @@ func myIPWithTimeout() string {
         render "work()#$iamworker exits (num workers is $workers)"
 */
  }
+/*
+//func TestVectorStatus(p TestVector) string {
+    def dots() {
+println "dots()"
+        piazzaBox = (params.containers) ?: myIP()
+        externalUserService = myIP()
+    }
+    def zdots() {
+        piazzaBox = (params.containers) ?: myIP()
+        externalUserService = myIP()
+        zwork()
+        string()
+    }
+
+*/
+
+func stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector) string {
+    s := ""
+    for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
+        s += TestVectorStatus(q[i])
+    }
+    return s
+}
+/*
+    String stringOfDotDurationEachRepresentsAPiazzaJob() {
+       String s = ''
+       for (int i=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++) {
+
+            if (q[i]?.id5) {
+                def cat = new JsonSlurper().parseText(q[i].id5)
+                int durationAsInteger = cat.results
+                def temp
+                if (durationAsInteger <= 16) temp = '3'
+                if (durationAsInteger <= 12) temp = '2'
+                if (durationAsInteger <= 8) temp = '1'
+                if (durationAsInteger <= 4) temp = '0'
+                s += temp
+            }
+            else {
+                s += '5'
+            }
+       }
+       s
+    }
+    def string() {
+        render stringOfDotStatusEachRepresentsAPiazzaJob() + '\n'
+    }
+    String stringOfSquareHealthEachRepresentsAContainerOrProcess() {
+        Random rand = new Random()
+
+       String s = ''
+
+       if (qhealth[0]) {
+          //For healthy services, return a random number (because their
+          //continual updating indicates that monitoring activity is
+          //taking place). That eliminates the need to create a fancy
+          //page GUI design.
+          //was 'rand.nextInt(1111)', now is ''
+          s += (qhealth[0].port8079)? '' : 'nexus?'
+          //s += ','
+          s += (qhealth[0].port8081)? '' : 'pz-gateway?'
+          //s += ','
+          s += (qhealth[0].port8083)? '' : 'pz-jobmanager?'
+          //s += ','
+          s += (qhealth[0].port8084)? '' : 'pz-ingest?'
+          //s += ','
+          s += (qhealth[0].port8085)? '' : 'pz-access?'
+          //s += ','
+          s += (qhealth[0].port8088)? '' : 'pz-servicecontroller?'
+       }
+       s
+    }
+
+    boolean booleanOfDotCompletion() {
+       stringOfDotStatusEachRepresentsAPiazzaJob() == '4'.multiply(NUM_COLORFUL_DISPLAY_DOTS)
+    }
+
+    String stringOfDotCompletion() {
+       booleanOfDotCompletion()? 'completed' : 'active'
+       booleanOfDotCompletion()? '' : ''
+    }
+
+    def status() {
+        render(contentType: 'text/json') {[
+            'dotStatus': stringOfDotStatusEachRepresentsAPiazzaJob(),
+            'dotDuration': stringOfDotDurationEachRepresentsAPiazzaJob(),
+            'squareHealth': stringOfSquareHealthEachRepresentsAContainerOrProcess(),
+            'dotCompletion': stringOfDotCompletion()
+        ]}
+    }
+
+*/
 
  func Home(w http.ResponseWriter, r *http.Request) {
   html := `<head>	
@@ -343,7 +442,6 @@ func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
     p.id2 = ""
     p.id3 = ""
     p.id4 = ""
-    //fmt.Println(p.EXTERNAL_USER_SERVICE + p.PIAZZA_PRIME_BOX)
     return p
 }
 
@@ -366,48 +464,6 @@ func nextStep(p TestVector) *TestVector {
     if p.id4 == "" {
         p.id4 = pz4(p)
         if p.id4 == "" { return &p }
-    }
-
-    return &p
-}
-
-func oldNextStep(p TestVector) *TestVector {
-/* someday
-    if p.id5 == "" && p.id4 != "" {
-        p.id5 = pz5(p)
-    }
-    if p.id4 == "" && p.id3 != "" {
-        p.id4 = pz4(p)
-    }
-*/
-    if p.id3 == "" && p.id2 != "" {
-        p.id3 = pz3(p)
-        if p.id3 != "" {
-            p.id4 = pz4(p)
-        }
-    }
-
-    if p.id2 == "" && p.id1 != "" {
-        p.id2 = pz2(p)
-        if p.id2 != "" {
-            p.id3 = pz3(p)
-        }
-        if p.id3 != "" {
-            p.id4 = pz4(p)
-        }
-    }
-    if p.id1 == "" {
-        p.id1 = pz1(p)
-
-        if p.id1 != "" {
-            p.id2 = pz2(p)
-        }
-        if p.id2 != "" {
-            p.id3 = pz3(p)
-        }
-        if p.id3 != "" {
-            p.id4 = pz4(p)
-        }
     }
 
     return &p
@@ -447,14 +503,7 @@ defer resp.Body.Close()
     foo := data["serviceId"]
     return foo.(string) 
 }
-/*
-{
-  "type" : "service-id",
-  "data" : {
-    "serviceId" : "7d2f1c07-0238-433a-bf72-b5f20a215b6c"
-  }
-}
-*/
+
 func pz1(p TestVector) string {
     body2 := `{"url":"REPLACEME","method":"GET","contractUrl":"REPLACEME/","resourceMetadata":{"name":"Hello World Test","description":"Hello world test","classType":{"classification":"UNCLASSIFIED"}}}`
     body2 = strings.Replace(body2, "REPLACEME", p.EXTERNAL_USER_SERVICE, -1)
@@ -571,7 +620,7 @@ func pz4curl(p TestVector, body2 string) string {
 */
 
 // Generated by curl-to-Go: https://mholt.github.io/curl-to-go
-//http://$PIAZZA_PRIME_BOX:8081/data/${id3.data.result.dataId
+
 temp := "http://" + p.PIAZZA_PRIME_BOX + ":8081/data/" + p.id3
 //fmt.Println(temp)
 req, err := http.NewRequest("GET", temp, nil)
@@ -596,14 +645,9 @@ defer resp.Body.Close()
     }
     //fmt.Println("***dat***:")
     //fmt.Println(dat)
-/*
-map[type:error message:Data not found: 2690beab-3beb-459d-9401-d034f6e8be9e origin:Access]
-*/
     if dat["data"] == nil {
         return ""
     }
-//id4?.data?.dataType?.content
-// http://$PIAZZA_PRIME_BOX:8081/data/${id3.data.result.dataId}
     data := dat["data"].(map[string]interface{})
     //fmt.Println("***data***:")
     //fmt.Println(data)
@@ -625,6 +669,15 @@ func pz4(p TestVector) string {
     pz4curlresult := pz4curl(p, body2)
     fmt.Println("  -" + pz4curlresult)
     return pz4curlresult
+}
+
+func TestVectorStatus(p *TestVector) string {
+    // id4? 4 : (id3? 3 : (id2? 2 : (id1? 1 : 0)))
+    if (p.id4 != "") { return "4" }
+    if (p.id3 != "") { return "3" }
+    if (p.id2 != "") { return "2" }
+    if (p.id1 != "") { return "1" }
+    return "0"
 }
 
 func NewHealthArray() *HealthArray {
@@ -651,34 +704,8 @@ func NewHealthArray() *HealthArray {
   http.ListenAndServe(":8077", mux)
  }
 /*
-    def pz3() {
-        assert id2
-
-        def returnval = null
-        def myprocess4 = [ 'bash', '-c', "curl -v -k -X GET -H \"Content-Type: application/json\" http://$PIAZZA_PRIME_BOX:8081/job/${id2?.data?.jobId}" ].execute()
-        def myprocess4AsText
-        try {
-            myprocess4AsText = myprocess4.text
-            def result4AsJson = new JsonSlurper().parseText(myprocess4AsText)
-            result4AsJson.data.result.dataId
-            returnval = result4AsJson
-        } catch(e) {}
-        returnval
+    String status() {
+     id4? 4 : (id3? 3 : (id2? 2 : (id1? 1 : 0)))
     }
 
-    def pz4() {
-        assert id3
-        if (id3?.data) {
-            def myprocess5 = [ 'bash', '-c', "curl -v -k -X GET -H \"Content-Type: application/json\" http://$PIAZZA_PRIME_BOX:8081/data/${id3.data.result.dataId}" ].execute()
-            String myprocess5AsText = myprocess5.text
-            def result5AsJson = new JsonSlurper().parseText(myprocess5AsText)
-            id5 = result5AsJson?.data?.dataType?.content //this eliminates the need for an extra iteration to populate id5
-            result5AsJson
-        }
-    }
-
-    def pz5() {
-        assert id4
-        id4?.data?.dataType?.content
-    }
 */
