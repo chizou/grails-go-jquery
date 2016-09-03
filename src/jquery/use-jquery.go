@@ -159,6 +159,7 @@ func myIPWithTimeout() string {
     q[i] = nextStep(*q[i])
   }
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
+  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 //cannot use q (type [16]*TestVector) as type []*TestVector in argument to stringOfDotStatusEachRepresentsAPiazzaJob
 
 
@@ -168,6 +169,7 @@ func myIPWithTimeout() string {
     q[i] = nextStep(*q[i])
   }
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
+  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   time.Sleep(10 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
@@ -175,6 +177,7 @@ func myIPWithTimeout() string {
     q[i] = nextStep(*q[i])
   }
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
+  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   time.Sleep(10 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
@@ -182,6 +185,7 @@ func myIPWithTimeout() string {
     q[i] = nextStep(*q[i])
   }
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
+  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   time.Sleep(10 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
@@ -189,6 +193,7 @@ func myIPWithTimeout() string {
     q[i] = nextStep(*q[i])
   }
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
+  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   fmt.Printf("Work(%s,%s,%d)", piazzaBox, externalUserService, iamworker)
 /*
@@ -238,27 +243,34 @@ func stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, q 
     }
     return s
 }
-/*
-    String stringOfDotDurationEachRepresentsAPiazzaJob() {
-       String s = ''
-       for (int i=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++) {
 
-            if (q[i]?.id5) {
-                def cat = new JsonSlurper().parseText(q[i].id5)
-                int durationAsInteger = cat.results
-                def temp
-                if (durationAsInteger <= 16) temp = '3'
-                if (durationAsInteger <= 12) temp = '2'
-                if (durationAsInteger <= 8) temp = '1'
-                if (durationAsInteger <= 4) temp = '0'
+func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector) string {
+    s := ""
+    for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
+        temp := "5"
+        if q[i].id4 != "" {
+            var dat map[string]interface{}
+            if err3 := json.Unmarshal([]byte(q[i].id4), &dat); err3 != nil {
+                panic(err3)
+            }
+            //fmt.Println("***dat***:")
+            //fmt.Println(dat)
+            if dat["results"] != nil {
+                if dat["results"].(float64) <= 16 { temp = "3" }
+                if dat["results"].(float64) <= 12 { temp = "2" }
+                if dat["results"].(float64) <= 8 { temp = "1" }
+                if dat["results"].(float64) <= 4 { temp = "0" }
                 s += temp
-            }
-            else {
-                s += '5'
-            }
-       }
-       s
+            } else {
+                s += temp
+            } 
+        } else {
+            s += temp
+        }
     }
+    return s
+}
+/*
     def string() {
         render stringOfDotStatusEachRepresentsAPiazzaJob() + '\n'
     }
@@ -415,14 +427,6 @@ func stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, q 
        `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n` +
        `"}`)
    w.Write(byu)
- }
-
- func receiveAjax(w http.ResponseWriter, r *http.Request) {
-  if r.Method == "POST" {
-   ajax_post_data := r.FormValue("ajax_post_data")
-   fmt.Println("Receive ajax post data string ", ajax_post_data)
-   w.Write([]byte("<h2>after<h2>"))
-  }
  }
 
 type TestVector struct {
@@ -699,13 +703,6 @@ func NewHealthArray() *HealthArray {
   mux := http.NewServeMux()
   mux.HandleFunc("/", Home)
   mux.HandleFunc("/greentimerwork", Work)
-  mux.HandleFunc("/receive", receiveAjax)
   mux.HandleFunc("/status", greenstatus)
   http.ListenAndServe(":8077", mux)
  }
-/*
-    String status() {
-     id4? 4 : (id3? 3 : (id2? 2 : (id1? 1 : 0)))
-    }
-
-*/
