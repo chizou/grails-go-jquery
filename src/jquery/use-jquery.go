@@ -150,68 +150,17 @@ func myIPWithTimeout() string {
   workers++
   //iamworker := workers
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    fmt.Println("0th pass:i=" + strconv.Itoa(i))
+    //fmt.Println("0th pass:i=" + strconv.Itoa(i))
     q[i] = NewTestVector(piazzaBox, externalUserService)
   }
-  //This is an arbitrarily large number. We might as well loop forever.
-  //MAX_ITERATION_TO_CALL_TEST_VECTOR := 4 //64000
 
-  time.Sleep(1 * time.Second)
+var MAX_ITERATION_TO_CALL_TEST_VECTOR = 64000
+for j:=0; j<MAX_ITERATION_TO_CALL_TEST_VECTOR; j++ {
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    fmt.Println("1st pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
   }
-  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-//cannot use q (type [16]*TestVector) as type []*TestVector in argument to stringOfDotStatusEachRepresentsAPiazzaJob
-
-for j:=0; j<40; j++ {
-  time.Sleep(1 * time.Second)
-  for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    fmt.Println(strconv.Itoa(j) + " pass:i=" + strconv.Itoa(i))
-    q[i] = nextStep(*q[i])
-  }
-  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 }
 /*
-  time.Sleep(1 * time.Second)
-  for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    fmt.Println("3rd pass:i=" + strconv.Itoa(i))
-    q[i] = nextStep(*q[i])
-  }
-  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-
-  time.Sleep(1 * time.Second)
-  for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    fmt.Println("4th pass:i=" + strconv.Itoa(i))
-    q[i] = nextStep(*q[i])
-  }
-  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-
-  time.Sleep(1 * time.Second)
-  for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    fmt.Println("5th pass:i=" + strconv.Itoa(i))
-    q[i] = nextStep(*q[i])
-  }
-  fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-  fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-
-  fmt.Printf("Work(%s,%s,%d)", piazzaBox, externalUserService, iamworker)
-*/
-
-/*
- time.Sleep(n * time.Second
-        //s/m: this can be made more groovy, right? spread operator?
-        for (int i=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++) {
-            q[i] = new TestVector(piazzaBox, externalUserService)
-        }
-
-        //This is an arbitrarily large number. We might as well loop forever.
-        def MAX_ITERATION_TO_CALL_TEST_VECTOR = 64000
-
         (0..MAX_ITERATION_TO_CALL_TEST_VECTOR).each {
             if ((iamworker == workers) && (!booleanOfDotCompletion())) {
                 def HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN = 10
@@ -242,7 +191,7 @@ println "dots()"
 
 */
 
-func stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector) string {
+func stringOfDotStatusEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector*/) string {
     s := ""
     for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
         s += TestVectorStatus(q[i])
@@ -250,7 +199,7 @@ func stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, q 
     return s
 }
 
-func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector) string {
+func stringOfDotDurationEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector*/) string {
     s := ""
     for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
         temp := "5"
@@ -275,6 +224,10 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, 
         }
     }
     return s
+}
+
+func booleanOfDotCompletion() bool {
+    return stringOfDotStatusEachRepresentsAPiazzaJob() == strings.Repeat("4", 16)
 }
 /*
     def string() {
@@ -306,9 +259,6 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, 
        s
     }
 
-    boolean booleanOfDotCompletion() {
-       stringOfDotStatusEachRepresentsAPiazzaJob() == '4'.multiply(NUM_COLORFUL_DISPLAY_DOTS)
-    }
 
     String stringOfDotCompletion() {
        booleanOfDotCompletion()? 'completed' : 'active'
@@ -420,8 +370,6 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, 
 
  }
 
-//fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-//fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
  func greenstatus(w http.ResponseWriter, r *http.Request) {
    var s1 string
    var s2 string 
@@ -429,8 +377,8 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, 
        s1 = `1124012411241124`
        s2 = `1122331122331122`
    } else {
-       s1 = stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q)
-       s2 = stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q)
+       s1 = stringOfDotStatusEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS, q*/)
+       s2 = stringOfDotDurationEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS, q*/)
    }
    s := `{"dotStatus":"` + s1 + `",` +
        `"dotDuration":"` + s2 + `",` +
@@ -530,7 +478,7 @@ func pz1(p TestVector) string {
     body2 := `{"url":"REPLACEME","method":"GET","contractUrl":"REPLACEME/","resourceMetadata":{"name":"Hello World Test","description":"Hello world test","classType":{"classification":"UNCLASSIFIED"}}}`
     body2 = strings.Replace(body2, "REPLACEME", p.EXTERNAL_USER_SERVICE, -1)
     pz1curlresult := pz1curl(p, body2)
-    fmt.Println(pz1curlresult)
+    //fmt.Println(pz1curlresult)
     return pz1curlresult 
 }
 
@@ -574,7 +522,7 @@ func pz2(p TestVector) string {
     body2 := `{"type":"execute-service","data":{"serviceId":"REPLACEME","dataInputs":{},"dataOutput":[{"mimeType":"application/json","type":"text"}]}}`
     body2 = strings.Replace(body2, "REPLACEME", p.id1, -1)
     pz2curlresult := pz2curl(p, body2)
-    fmt.Println(" " + pz2curlresult)
+    //fmt.Println(" " + pz2curlresult)
     return pz2curlresult
 }
 
@@ -629,7 +577,7 @@ func pz3(p TestVector) string {
     body2 := `{"type":"execute-service","data":{"serviceId":"REPLACEME","dataInputs":{},"dataOutput":[{"mimeType":"application/json","type":"text"}]}}`
     body2 = strings.Replace(body2, "REPLACEME", p.id2, -1)
     pz3curlresult := pz3curl(p, body2)
-    fmt.Println(" +" + pz3curlresult)
+    //fmt.Println(" +" + pz3curlresult)
     return pz3curlresult
 }
 
@@ -689,7 +637,7 @@ func pz4(p TestVector) string {
     body2 := `{"type":"execute-service","data":{"serviceId":"REPLACEME","dataInputs":{},"dataOutput":[{"mimeType":"application/json","type":"text"}]}}`
     body2 = strings.Replace(body2, "REPLACEME", p.id3, -1)
     pz4curlresult := pz4curl(p, body2)
-    fmt.Println("  -" + pz4curlresult)
+    //fmt.Println("  -" + pz4curlresult)
     return pz4curlresult
 }
 
