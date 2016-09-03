@@ -148,7 +148,7 @@ func myIPWithTimeout() string {
   //if the worker number doesn't match the number of workers, then
   //the worker exits.
   workers++
-  iamworker := workers
+  //iamworker := workers
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("0th pass:i=" + strconv.Itoa(i))
     q[i] = NewTestVector(piazzaBox, externalUserService)
@@ -156,7 +156,7 @@ func myIPWithTimeout() string {
   //This is an arbitrarily large number. We might as well loop forever.
   //MAX_ITERATION_TO_CALL_TEST_VECTOR := 4 //64000
 
-  time.Sleep(10 * time.Second)
+  time.Sleep(1 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("1st pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
@@ -165,16 +165,17 @@ func myIPWithTimeout() string {
   fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 //cannot use q (type [16]*TestVector) as type []*TestVector in argument to stringOfDotStatusEachRepresentsAPiazzaJob
 
-
-  time.Sleep(10 * time.Second)
+for j:=0; j<40; j++ {
+  time.Sleep(1 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    fmt.Println("2nd pass:i=" + strconv.Itoa(i))
+    fmt.Println(strconv.Itoa(j) + " pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
   }
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
   fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
-
-  time.Sleep(10 * time.Second)
+}
+/*
+  time.Sleep(1 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("3rd pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
@@ -182,7 +183,7 @@ func myIPWithTimeout() string {
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
   fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
-  time.Sleep(10 * time.Second)
+  time.Sleep(1 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("4th pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
@@ -190,7 +191,7 @@ func myIPWithTimeout() string {
   fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
   fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
-  time.Sleep(10 * time.Second)
+  time.Sleep(1 * time.Second)
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     fmt.Println("5th pass:i=" + strconv.Itoa(i))
     q[i] = nextStep(*q[i])
@@ -199,6 +200,8 @@ func myIPWithTimeout() string {
   fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
 
   fmt.Printf("Work(%s,%s,%d)", piazzaBox, externalUserService, iamworker)
+*/
+
 /*
  time.Sleep(n * time.Second
         //s/m: this can be made more groovy, right? spread operator?
