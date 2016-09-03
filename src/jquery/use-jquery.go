@@ -12,6 +12,7 @@ package main
 
 const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
 var q [NUM_COLORFUL_DISPLAY_DOTS] *TestVector
+var qhealth *HealthArray
 
 type HealthArray struct {
     myip string
@@ -148,7 +149,7 @@ func myIPWithTimeout() string {
   //if the worker number doesn't match the number of workers, then
   //the worker exits.
   workers++
-  //iamworker := workers
+  iamworker := workers
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
     //fmt.Println("0th pass:i=" + strconv.Itoa(i))
     q[i] = NewTestVector(piazzaBox, externalUserService)
@@ -156,8 +157,14 @@ func myIPWithTimeout() string {
 
 var MAX_ITERATION_TO_CALL_TEST_VECTOR = 64000
 for j:=0; j<MAX_ITERATION_TO_CALL_TEST_VECTOR; j++ {
-  for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    q[i] = nextStep(*q[i])
+  if iamworker == workers && !booleanOfDotCompletion() {
+    var HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN = 10
+    if j % HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN == 0 {
+      qhealth = new(HealthArray)
+    }
+    for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
+      q[i] = nextStep(*q[i])
+    }
   }
 }
 /*
