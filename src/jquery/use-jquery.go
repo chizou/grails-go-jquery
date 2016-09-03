@@ -10,6 +10,9 @@ package main
   "time"
  )
 
+const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
+var q [NUM_COLORFUL_DISPLAY_DOTS] *TestVector
+
 type HealthArray struct {
     myip string
     port8079 bool
@@ -136,8 +139,8 @@ func myIPWithTimeout() string {
   piazzaBox := /*(params.containers) ?: */myIPWithTimeout()
   externalUserService := myIPWithTimeout()
   workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
-  const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
-  var q [NUM_COLORFUL_DISPLAY_DOTS] *TestVector
+  //const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
+  //var q [NUM_COLORFUL_DISPLAY_DOTS] *TestVector
 
 
   //work() is invoked from the gsp page each time the browser is refreshed.
@@ -414,9 +417,20 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, 
 
  }
 
+//fmt.Println(stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
+//fmt.Println(stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q))
  func greenstatus(w http.ResponseWriter, r *http.Request) {
-   byu := []byte(`{"dotStatus":"1124012411241124", ` +
-       `"dotDuration":"1122331122331122", ` + 
+   var s1 string
+   var s2 string 
+   if q[0] == nil {
+       s1 = `1124012411241124`
+       s2 = `1122331122331122`
+   } else {
+       s1 = stringOfDotStatusEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q)
+       s2 = stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS, q)
+   }
+   s := `{"dotStatus":"` + s1 + `",` +
+       `"dotDuration":"` + s2 + `",` +
        `"squareHealth":"pz-jobmanager?", ` +
        `"dotCompletion":"` + myIPWithTimeout() + `\n` +
        `nexus: ` + strconv.FormatBool(test8079()) +  ` \n` +
@@ -425,7 +439,8 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(NUM_COLORFUL_DISPLAY_DOTS int, 
        `Loader: ` + strconv.FormatBool(test8084()) +  ` \n` +
        `access: ` + strconv.FormatBool(test8085()) +  ` \n` +
        `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n` +
-       `"}`)
+       `"}`
+   byu := []byte(s)
    w.Write(byu)
  }
 
@@ -696,7 +711,6 @@ func NewHealthArray() *HealthArray {
 }
 
  func main() {
-
   ha := NewHealthArray()
   fmt.Printf("test8079: %s\n", ha.port8079)
   // http.Handler
