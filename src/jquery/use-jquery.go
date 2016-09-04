@@ -12,7 +12,7 @@ package main
 
 const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
 var q [NUM_COLORFUL_DISPLAY_DOTS] *TestVector
-var qhealth *HealthArray
+var qhealth = NewHealthArray() //*HealthArray
 
 type HealthArray struct {
     myip string
@@ -36,8 +36,6 @@ func test8079() bool {
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    //fmt.Printf("Error: %v\n", err)
     return strings.Contains(string(body), `Nexus`)
 }
 
@@ -53,8 +51,6 @@ func test8081() bool {
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    //fmt.Printf("Error: %v\n", err)
     return strings.Contains(string(body), `pz-gateway`)
 }
 func test8083() bool { timeout := time.Duration(3 * time.Second)
@@ -68,8 +64,6 @@ func test8083() bool { timeout := time.Duration(3 * time.Second)
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    //fmt.Printf("Error: %v\n", err)
     return strings.Contains(string(body), `pz-jobmanager`)
 }
 func test8084() bool {
@@ -84,8 +78,6 @@ func test8084() bool {
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    //fmt.Printf("Error: %v\n", err)
     return strings.Contains(string(body), `Loader`)
 }
 func test8085() bool {
@@ -100,8 +92,6 @@ func test8085() bool {
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    //fmt.Printf("Error: %v\n", err)
     return strings.Contains(string(body), `pz-access`)
 }
 func test8088() bool {
@@ -116,8 +106,6 @@ func test8088() bool {
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    //fmt.Printf("Error: %v\n", err)
     return strings.Contains(string(body), `Piazza Service Controller`)
 }
 func myIPWithTimeout() string {
@@ -131,8 +119,6 @@ func myIPWithTimeout() string {
     }
     defer resp.Body.Close()
     body, err := ioutil.ReadAll(resp.Body)
-    //fmt.Printf("Body: %s\n", body)
-    //fmt.Printf("Error: %v\n", err)
     return string(body)
 }
 
@@ -140,9 +126,6 @@ func myIPWithTimeout() string {
   piazzaBox := /*(params.containers) ?: */myIPWithTimeout()
   externalUserService := myIPWithTimeout()
   workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
-  //const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
-  //var q [NUM_COLORFUL_DISPLAY_DOTS] *TestVector
-
 
   //work() is invoked from the gsp page each time the browser is refreshed.
   //we don't want multiple workers, so each worker gets a worker number.
@@ -151,7 +134,6 @@ func myIPWithTimeout() string {
   workers++
   iamworker := workers
   for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
-    //fmt.Println("0th pass:i=" + strconv.Itoa(i))
     q[i] = NewTestVector(piazzaBox, externalUserService)
   }
 
@@ -160,45 +142,16 @@ for j:=0; j<MAX_ITERATION_TO_CALL_TEST_VECTOR; j++ {
   if iamworker == workers && !booleanOfDotCompletion() {
     var HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN = 10
     if j % HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN == 0 {
-      qhealth = new(HealthArray)
+      qhealth = NewHealthArray() //replace this method to update a singleton not New
     }
     for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
       q[i] = nextStep(*q[i])
     }
   }
 }
-/*
-        (0..MAX_ITERATION_TO_CALL_TEST_VECTOR).each {
-            if ((iamworker == workers) && (!booleanOfDotCompletion())) {
-                def HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN = 10
-                if (it % HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN == 0) {
-                    qhealth[0] = new HealthArray()
-                }
-                for (int i=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++) {
-                    q[i].nextstep()
-                }
-            }
-        }
-        render "work()#$iamworker exits (num workers is $workers)"
-*/
  }
-/*
-//func TestVectorStatus(p TestVector) string {
-    def dots() {
-println "dots()"
-        piazzaBox = (params.containers) ?: myIP()
-        externalUserService = myIP()
-    }
-    def zdots() {
-        piazzaBox = (params.containers) ?: myIP()
-        externalUserService = myIP()
-        zwork()
-        string()
-    }
 
-*/
-
-func stringOfDotStatusEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector*/) string {
+func stringOfDotStatusEachRepresentsAPiazzaJob() string {
     s := ""
     for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
         s += TestVectorStatus(q[i])
@@ -206,7 +159,7 @@ func stringOfDotStatusEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS int, 
     return s
 }
 
-func stringOfDotDurationEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS int, q [16] *TestVector*/) string {
+func stringOfDotDurationEachRepresentsAPiazzaJob() string {
     s := ""
     for i:=0; i<NUM_COLORFUL_DISPLAY_DOTS; i++ {
         temp := "5"
@@ -215,8 +168,6 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS int
             if err3 := json.Unmarshal([]byte(q[i].id4), &dat); err3 != nil {
                 panic(err3)
             }
-            //fmt.Println("***dat***:")
-            //fmt.Println(dat)
             if dat["results"] != nil {
                 if dat["results"].(float64) <= 16 { temp = "3" }
                 if dat["results"].(float64) <= 12 { temp = "2" }
@@ -233,15 +184,49 @@ func stringOfDotDurationEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS int
     return s
 }
 
-func booleanOfDotCompletion() bool {
-    return stringOfDotStatusEachRepresentsAPiazzaJob() == strings.Repeat("4", 16)
+func stringOfDotCompletionLong() string {
+    return `my IP: ` + myIPWithTimeout() + `\n` +
+       `nexus: ` + strconv.FormatBool(test8079()) +  ` \n` +
+       `gateway: ` + strconv.FormatBool(test8081()) +  ` \n` +
+       `jobmanager: ` + strconv.FormatBool(test8083()) +  ` \n` +
+       `Loader: ` + strconv.FormatBool(test8084()) +  ` \n` +
+       `access: ` + strconv.FormatBool(test8085()) +  ` \n` +
+       `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n`
 }
-/*
-    def string() {
-        render stringOfDotStatusEachRepresentsAPiazzaJob() + '\n'
+
+func stringOfDotCompletion() string {
+    if booleanOfDotCompletion() {
+        return "active... completed"
+    } else {
+        return "active"
     }
+}
+
+func booleanOfDotCompletion() bool {
+    return stringOfDotStatusEachRepresentsAPiazzaJob() == strings.Repeat("4", NUM_COLORFUL_DISPLAY_DOTS)
+}
+
+func stringOfSquareHealthEachRepresentsAContainerOrProcess() string {
+    var s string
+
+    if qhealth != nil {
+        //For healthy services, return a random number (because their
+        //continual updating indicates that monitoring activity is
+        //taking place). That eliminates the need to create a fancy
+        //page GUI design.
+        if qhealth.port8079 == false { s += "nexus?" }
+        if qhealth.port8081 == false { s += "gateway?" }
+        if qhealth.port8083 == false { s += "jobmanager?" }
+        if qhealth.port8084 == false { s += "ingest?" }
+        if qhealth.port8085 == false { s += "access?" }
+        if qhealth.port8088 == false { s += "servicecontroller?" }
+    }
+    return s
+}
+
+/*
     String stringOfSquareHealthEachRepresentsAContainerOrProcess() {
-        Random rand = new Random()
+       Random rand = new Random()
 
        String s = ''
 
@@ -252,37 +237,22 @@ func booleanOfDotCompletion() bool {
           //page GUI design.
           //was 'rand.nextInt(1111)', now is ''
           s += (qhealth[0].port8079)? '' : 'nexus?'
-          //s += ','
           s += (qhealth[0].port8081)? '' : 'pz-gateway?'
-          //s += ','
           s += (qhealth[0].port8083)? '' : 'pz-jobmanager?'
-          //s += ','
           s += (qhealth[0].port8084)? '' : 'pz-ingest?'
-          //s += ','
           s += (qhealth[0].port8085)? '' : 'pz-access?'
-          //s += ','
           s += (qhealth[0].port8088)? '' : 'pz-servicecontroller?'
        }
        s
     }
-
-
-    String stringOfDotCompletion() {
-       booleanOfDotCompletion()? 'completed' : 'active'
-       booleanOfDotCompletion()? '' : ''
-    }
-
-    def status() {
-        render(contentType: 'text/json') {[
-            'dotStatus': stringOfDotStatusEachRepresentsAPiazzaJob(),
-            'dotDuration': stringOfDotDurationEachRepresentsAPiazzaJob(),
-            'squareHealth': stringOfSquareHealthEachRepresentsAContainerOrProcess(),
-            'dotCompletion': stringOfDotCompletion()
-        ]}
-    }
-
 */
-
+/*
+you get a bag of $1000, how would you spend it?
+concert, sporting event, dancing
+tall hotel from your travel agent, you go up, what do you see?
+if you couldn't get hurt, what extreme activity would you try?
+*/
+ 
  func Home(w http.ResponseWriter, r *http.Request) {
   html := `<head>	
  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js">
@@ -302,6 +272,7 @@ func booleanOfDotCompletion() bool {
    r = foox.dotStatus
    t = foox.dotDuration
    v = foox.squareHealth
+   paper.text(800, 400, v);
    w = foox.dotCompletion
    paper.text(200, 400, w);
    var THROWAWAY_BR_CHARS = 0
@@ -380,24 +351,24 @@ func booleanOfDotCompletion() bool {
  func greenstatus(w http.ResponseWriter, r *http.Request) {
    var s1 string
    var s2 string 
+   var s3 string
+   var s4 string
    if q[0] == nil {
        s1 = `1124012411241124`
        s2 = `1122331122331122`
+       s3 = `hello`
+       s4 = `hello`
    } else {
-       s1 = stringOfDotStatusEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS, q*/)
-       s2 = stringOfDotDurationEachRepresentsAPiazzaJob(/*NUM_COLORFUL_DISPLAY_DOTS, q*/)
+       s1 = stringOfDotStatusEachRepresentsAPiazzaJob()
+       s2 = stringOfDotDurationEachRepresentsAPiazzaJob()
+       s3 = stringOfDotCompletionLong()
+       s4 = stringOfSquareHealthEachRepresentsAContainerOrProcess()
    }
    s := `{"dotStatus":"` + s1 + `",` +
        `"dotDuration":"` + s2 + `",` +
-       `"squareHealth":"pz-jobmanager?", ` +
-       `"dotCompletion":"` + myIPWithTimeout() + `\n` +
-       `nexus: ` + strconv.FormatBool(test8079()) +  ` \n` +
-       `gateway: ` + strconv.FormatBool(test8081()) +  ` \n` +
-       `jobmanager: ` + strconv.FormatBool(test8083()) +  ` \n` +
-       `Loader: ` + strconv.FormatBool(test8084()) +  ` \n` +
-       `access: ` + strconv.FormatBool(test8085()) +  ` \n` +
-       `servicecontroller: ` + strconv.FormatBool(test8088()) +  ` \n` +
-       `"}`
+       `"squareHealth":"` + s4 + `",` +
+       `"dotCompletion":"` + s3 + `"}`
+
    byu := []byte(s)
    w.Write(byu)
  }
@@ -563,19 +534,13 @@ defer resp.Body.Close()
     if err3 := json.Unmarshal(body3, &dat); err3 != nil {
         panic(err3)
     }
-    //fmt.Println("***dat***:")
-    //fmt.Println(dat)
     data := dat["data"].(map[string]interface{})
-    //fmt.Println("***data***:")
-    //fmt.Println(data)
     if data["result"] == nil {
        //fmt.Println("The result is nil")
        return ""
     } 
 
     result := data["result"].(map[string]interface{})
-    //fmt.Println("***result***:")
-    //fmt.Println(result)
     foo := result["dataId"]
     return foo.(string)
 }
@@ -620,22 +585,16 @@ defer resp.Body.Close()
     if err3 := json.Unmarshal(body3, &dat); err3 != nil {
         panic(err3)
     }
-    //fmt.Println("***dat***:")
-    //fmt.Println(dat)
     if dat["data"] == nil {
         return ""
     }
     data := dat["data"].(map[string]interface{})
-    //fmt.Println("***data***:")
-    //fmt.Println(data)
     if data["dataType"] == nil {
        fmt.Println("pz4curl The dataType is nil")
        return ""
     } 
 
     result := data["dataType"].(map[string]interface{})
-    //fmt.Println("***result***:")
-    //fmt.Println(result)
     foo := result["content"]
     return foo.(string)
 }
@@ -649,7 +608,6 @@ func pz4(p TestVector) string {
 }
 
 func TestVectorStatus(p *TestVector) string {
-    // id4? 4 : (id3? 3 : (id2? 2 : (id1? 1 : 0)))
     if (p.id4 != "") { return "4" }
     if (p.id3 != "") { return "3" }
     if (p.id2 != "") { return "2" }
@@ -669,12 +627,36 @@ func NewHealthArray() *HealthArray {
 }
 
  func main() {
-  ha := NewHealthArray()
-  fmt.Printf("test8079: %s\n", ha.port8079)
-  // http.Handler
   mux := http.NewServeMux()
   mux.HandleFunc("/", Home)
   mux.HandleFunc("/greentimerwork", Work)
   mux.HandleFunc("/status", greenstatus)
   http.ListenAndServe(":8077", mux)
  }
+/*
+Get ExternalUserService from Grails.
+*/
+/*
+    def dots() {
+        piazzaBox = (params.containers) ?: myIP()
+        externalUserService = myIP()
+    }
+    def zdots() {
+        piazzaBox = (params.containers) ?: myIP()
+        externalUserService = myIP()
+        zwork()
+        string()
+    }
+    def string() {
+        render stringOfDotStatusEachRepresentsAPiazzaJob() + '\n'
+    }
+
+    def status() {
+        render(contentType: 'text/json') {[
+            'dotStatus': stringOfDotStatusEachRepresentsAPiazzaJob(),
+            'dotDuration': stringOfDotDurationEachRepresentsAPiazzaJob(),
+            'squareHealth': stringOfSquareHealthEachRepresentsAContainerOrProcess(),
+            'dotCompletion': stringOfDotCompletion()
+        ]}
+    }
+*/
