@@ -14,6 +14,7 @@ import (
 const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
 var q [NUM_COLORFUL_DISPLAY_DOTS]*TestVector
 var qhealth = NewHealthArray() //*HealthArray
+var containers []string
 
 type HealthArray struct {
 	myip     string
@@ -125,7 +126,13 @@ func myIPWithTimeout() string {
 }
 
 func Work(w http.ResponseWriter, r *http.Request) {
-	piazzaBox := /*(params.containers) ?: */ myIPWithTimeout()
+	var piazzaBox string
+	if (containers != nil) {
+		piazzaBox = containers[0]
+	} else { 
+		piazzaBox = myIPWithTimeout()
+	}
+	//piazzaBox := /*(params.containers) ?: */ myIPWithTimeout()
 	externalUserService := myIPWithTimeout()
 	workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
 
@@ -276,10 +283,8 @@ if you couldn't get hurt, what extreme activity would you try?
 */
 
 func Home(w http.ResponseWriter, r *http.Request) {
-containers := r.URL.Query()["containers"]
-if containers != nil {
-fmt.Println(containers[0])
-}
+containers = r.URL.Query()["containers"]
+
 	html := `<head>	
  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js">
  </script>
