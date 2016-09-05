@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -169,17 +170,17 @@ func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 			if err3 := json.Unmarshal([]byte(q[i].id4), &dat); err3 != nil {
 				panic(err3)
 			}
-			if dat["results"] != nil {
-				if dat["results"].(float64) <= 16 {
+			if dat["Results"] != nil {
+				if dat["Results"].(float64) <= 16 {
 					temp = "3"
 				}
-				if dat["results"].(float64) <= 12 {
+				if dat["Results"].(float64) <= 12 {
 					temp = "2"
 				}
-				if dat["results"].(float64) <= 8 {
+				if dat["Results"].(float64) <= 8 {
 					temp = "1"
 				}
-				if dat["results"].(float64) <= 4 {
+				if dat["Results"].(float64) <= 4 {
 					temp = "0"
 				}
 				s += temp
@@ -275,6 +276,10 @@ if you couldn't get hurt, what extreme activity would you try?
 */
 
 func Home(w http.ResponseWriter, r *http.Request) {
+containers := r.URL.Query()["containers"]
+if containers != nil {
+fmt.Println(containers[0])
+}
 	html := `<head>	
  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js">
  </script>
@@ -405,7 +410,8 @@ type TestVector struct {
 
 func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
 	p := new(TestVector)
-	p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8078/green/timer/external"
+	//p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8078/green/timer/external"
+	p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8077/external"
 	p.PIAZZA_PRIME_BOX = piazzaBox
 	p.id1 = ""
 	p.id2 = ""
@@ -668,12 +674,9 @@ func main() {
 	mux.HandleFunc("/", Home)
 	mux.HandleFunc("/greentimerwork", Work)
 	mux.HandleFunc("/status", greenstatus)
+	mux.HandleFunc("/external", external)
 	http.ListenAndServe(":8077", mux)
 }
-
-/*
-Get ExternalUserService from Grails.
-*/
 /*
    def dots() {
        piazzaBox = (params.containers) ?: myIP()
@@ -689,3 +692,19 @@ Get ExternalUserService from Grails.
        render stringOfDotStatusEachRepresentsAPiazzaJob() + '\n'
    }
 */
+type Data struct {
+	Results int
+	Status  string
+}
+//rand.Seed(time.Now().Unix())
+func external(w http.ResponseWriter, r *http.Request) {
+	t := rand.Intn(16)
+	time.Sleep(time.Second * time.Duration(t))
+	p := Data{t, "Nothing meaningful"}
+	b2, err2 := json.Marshal(p)
+	if err2 != nil {
+		//do something
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b2)
+}
