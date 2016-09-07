@@ -219,7 +219,20 @@ func translateIPToColor(s string) string {
 	if s == "" {
 		return "X"
 	}
-	if strings.Contains(s, myIPWithTimeout()) {
+
+	//we do have an external result and its IP
+	//this should be written as a smarter hash function
+	if clusterIPs[0] == "" {
+		clusterIPs[0] = s
+		fmt.Println("clusterIPs[0] is now " + s)
+	}
+	if clusterIPs[0] != "" && clusterIPs[0]  != s && clusterIPs[1] == "" {
+		clusterIPs[1] = s
+		fmt.Println("clusterIPs[1] is now " + s)
+	}
+
+	//if strings.Contains(s, myIPWithTimeout()) {
+	if s == clusterIPs[0] {
 		return "B"
 	} else {
 		return "G"
@@ -723,6 +736,7 @@ func NewHealthArray() *HealthArray {
 }
 
 func main() {
+	//clusterIPs[0] = `60.70.80.90`
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", Home)
 	mux.HandleFunc("/greentimerwork", Work)
