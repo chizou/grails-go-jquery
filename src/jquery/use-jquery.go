@@ -16,6 +16,10 @@ var q [NUM_COLORFUL_DISPLAY_DOTS]*TestVector
 var qhealth = NewHealthArray() //*HealthArray
 var containers []string
 
+const MAX_CLUSTER_NODES = 2
+
+var clusterIPs [MAX_CLUSTER_NODES]string
+
 type HealthArray struct {
 	myip     string
 	port8079 bool
@@ -127,9 +131,9 @@ func myIPWithTimeout() string {
 
 func Work(w http.ResponseWriter, r *http.Request) {
 	var piazzaBox string
-	if (containers != nil) {
+	if containers != nil {
 		piazzaBox = containers[0]
-	} else { 
+	} else {
 		piazzaBox = myIPWithTimeout()
 	}
 	//piazzaBox := /*(params.containers) ?: */ myIPWithTimeout()
@@ -211,16 +215,44 @@ func stringOfDotCompletionLong() string {
 		`servicecontroller: ` + strconv.FormatBool(test8088()) + ` \n`
 }
 
+func extractIPFromID4ResultsString(s string) string {
+	//Temporary function to read a field (Status) from a JSON string, e.g.
+	//  {"Results":1,"Status":"52.88.226.0"}
+	//Long term would definitely prefer to receive a JSON object instead.
+	var r string
+
+	ix := strings.Index(s, `"Status":"`)
+	if ix != -1 {
+		r = s[ix+len(`"Status":"`) : len(s)-len(`"}`)]
+	}
+	return r
+}
+
+
 func stringOfDotColor() string {
- s := ""
- for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
-   if myIPWithTimeout() == `52.88.226.0` {
-     s += "B"
-   } else {
-     s += "G"
-   }
- }
- return s
+	s := ""
+	for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
+		/*
+		   if myIPWithTimeout() == `52.88.226.0` {
+		     s += "B"
+		   } else {
+		     s += "G"
+		   }
+		*/
+		//   if clusterIPs[0] == "" {
+		fmt.Println(q[i].id4)
+		ix := strings.Index(q[i].id4, `"Status":"`)
+		if ix != -1 {
+			fmt.Println(q[i].id4[ix+len(`"Status":"`) : len(q[i].id4)-len(`"}`)])
+		}
+fmt.Println(extractIPFromID4ResultsString(q[i].id4))
+		if strings.Contains(q[i].id4, myIPWithTimeout()) {
+			s += "B"
+		} else {
+			s += "G"
+		}
+	}
+	return s
 }
 
 func stringOfDotCompletion() string {
@@ -273,7 +305,7 @@ if you couldn't get hurt, what extreme activity would you try?
 */
 
 func Home(w http.ResponseWriter, r *http.Request) {
-containers = r.URL.Query()["containers"]
+	containers = r.URL.Query()["containers"]
 
 	html := `<head>	
  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js">
@@ -395,13 +427,13 @@ func greenstatus(w http.ResponseWriter, r *http.Request) {
 	var s2 string
 	var s3 string
 	var s4 string
-        var s5 string
+	var s5 string
 	if q[0] == nil {
 		s1 = `1124012411241124`
 		s2 = `1122331122331122`
 		s3 = `hello`
 		s4 = `hello`
-                s5 = `hello`
+		s5 = `hello`
 	} else {
 		s1 = stringOfDotStatusEachRepresentsAPiazzaJob()
 		s2 = stringOfDotDurationEachRepresentsAPiazzaJob()
@@ -654,11 +686,19 @@ func pz4curl(p TestVector, body2 string) string {
 	return foo.(string)
 }
 
+func transformExternalIPtoDisplayColor(pz4result string) string {
+	if pz4result /*.status*/ != "" {
+		return "G"
+	} else {
+		return "B"
+	}
+}
+
 func pz4(p TestVector) string {
 	body2 := `{"type":"execute-service","data":{"serviceId":"REPLACEME","dataInputs":{},"dataOutput":[{"mimeType":"application/json","type":"text"}]}}`
 	body2 = strings.Replace(body2, "REPLACEME", p.id3, -1)
 	pz4curlresult := pz4curl(p, body2)
-	//fmt.Println("  -" + pz4curlresult)
+	//color := transformExternalIPtoDisplayColor(pz4curlresult)
 	return pz4curlresult
 }
 
@@ -697,6 +737,7 @@ func main() {
 	mux.HandleFunc("/external", external)
 	http.ListenAndServe(":8077", mux)
 }
+
 /*
    def dots() {
        piazzaBox = (params.containers) ?: myIP()
@@ -716,11 +757,15 @@ type Data struct {
 	Results int
 	Status  string
 }
-//rand.Seed(time.Now().Unix())
+
 func external(w http.ResponseWriter, r *http.Request) {
+	//when creating this function as truly external (i.e. separate
+	//from the Green Dot program, be sure to grab myIPWithTImeout()
+
+	//rand.Seed(time.Now().Unix())
 	t := rand.Intn(16)
 	time.Sleep(time.Second * time.Duration(t))
-	p := Data{t, "Nothing meaningful"}
+	p := Data{t, myIPWithTimeout() /*"Nothing meaningful"*/}
 	b2, err2 := json.Marshal(p)
 	if err2 != nil {
 		//do something
