@@ -211,6 +211,18 @@ func stringOfDotCompletionLong() string {
 		`servicecontroller: ` + strconv.FormatBool(test8088()) + ` \n`
 }
 
+func stringOfDotColor() string {
+ s := ""
+ for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
+   if myIPWithTimeout() == `52.88.226.0` {
+     s += "B"
+   } else {
+     s += "G"
+   }
+ }
+ return s
+}
+
 func stringOfDotCompletion() string {
 	if booleanOfDotCompletion() {
 		return "active... completed"
@@ -254,28 +266,6 @@ func stringOfSquareHealthEachRepresentsAContainerOrProcess() string {
 }
 
 /*
-   String stringOfSquareHealthEachRepresentsAContainerOrProcess() {
-      Random rand = new Random()
-
-      String s = ''
-
-      if (qhealth[0]) {
-         //For healthy services, return a random number (because their
-         //continual updating indicates that monitoring activity is
-         //taking place). That eliminates the need to create a fancy
-         //page GUI design.
-         //was 'rand.nextInt(1111)', now is ''
-         s += (qhealth[0].port8079)? '' : 'nexus?'
-         s += (qhealth[0].port8081)? '' : 'pz-gateway?'
-         s += (qhealth[0].port8083)? '' : 'pz-jobmanager?'
-         s += (qhealth[0].port8084)? '' : 'pz-ingest?'
-         s += (qhealth[0].port8085)? '' : 'pz-access?'
-         s += (qhealth[0].port8088)? '' : 'pz-servicecontroller?'
-      }
-      s
-   }
-*/
-/*
 you get a bag of $1000, how would you spend it?
 concert, sporting event, dancing
 tall hotel from your travel agent, you go up, what do you see?
@@ -305,6 +295,7 @@ containers = r.URL.Query()["containers"]
    v = foox.squareHealth
    paper.text(800, 400, v);
    w = foox.dotCompletion
+   x = foox.dotColor
    paper.text(200, 400, w);
    var THROWAWAY_BR_CHARS = 0
    var ROWS_PER_SQUARE = Math.sqrt(r.length) //10
@@ -315,12 +306,16 @@ containers = r.URL.Query()["containers"]
    var STOPLIGHT_GREEN = '#27E833'
    var MEDIUM_GREEN =    '#27C833'
    var DARK_GREEN =      '#27A833'
+   var STOPLIGHT_BLUE = '#CCE5FF'
+   var MEDIUM_BLUE =    '#66B2FF'
+   var DARK_BLUE =      '#0080FF'
    for (row = 0; row < ROWS_PER_SQUARE; row++) {
     for (col = 0; col < COLS_PER_SQUARE; col++) {
        var stroke
        var fill
        var filltext = ''
        var substring_start = THROWAWAY_BR_CHARS+row*ROWS_PER_SQUARE+col
+       //console.log(substring_start)
        var rchar = r.substring(substring_start, substring_start+1)
        if (rchar == '0') {
            stroke = "white"
@@ -338,17 +333,33 @@ containers = r.URL.Query()["containers"]
            fill = 'pink'
            filltext = 'error'
            var tchar = t.substring(substring_start, substring_start+1)
+           var xchar = x.substring(substring_start, substring_start+1)
            if ((tchar == '0') ||
                (tchar == '1')) {
-               fill = DARK_GREEN
+               if (xchar == 'G') {
+                   fill = DARK_GREEN
+               }
+               if (xchar == 'B') {
+                   fill = DARK_BLUE
+               }
                filltext = 'S'
            }
            if (tchar == '2') {
-               fill = MEDIUM_GREEN
+               if (xchar == 'G') {
+                   fill = MEDIUM_GREEN
+               }
+               if (xchar == 'B') {
+                   fill = MEDIUM_BLUE
+               }
                filltext = 'M'
            }
            if (tchar == '3') {
-               fill = STOPLIGHT_GREEN
+               if (xchar == 'G') {
+                   fill = STOPLIGHT_GREEN
+               }
+               if (xchar == 'B') {
+                   fill = STOPLIGHT_BLUE
+               }
                filltext = 'L'
            }
            stroke = fill
@@ -384,20 +395,24 @@ func greenstatus(w http.ResponseWriter, r *http.Request) {
 	var s2 string
 	var s3 string
 	var s4 string
+        var s5 string
 	if q[0] == nil {
 		s1 = `1124012411241124`
 		s2 = `1122331122331122`
 		s3 = `hello`
 		s4 = `hello`
+                s5 = `hello`
 	} else {
 		s1 = stringOfDotStatusEachRepresentsAPiazzaJob()
 		s2 = stringOfDotDurationEachRepresentsAPiazzaJob()
 		s3 = stringOfDotCompletionLong()
 		s4 = stringOfSquareHealthEachRepresentsAContainerOrProcess()
+		s5 = stringOfDotColor()
 	}
 	s := `{"dotStatus":"` + s1 + `",` +
 		`"dotDuration":"` + s2 + `",` +
 		`"squareHealth":"` + s4 + `",` +
+		`"dotColor":"` + s5 + `",` +
 		`"dotCompletion":"` + s3 + `"}`
 
 	byu := []byte(s)
