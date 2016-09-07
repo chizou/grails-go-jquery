@@ -215,6 +215,17 @@ func stringOfDotCompletionLong() string {
 		`servicecontroller: ` + strconv.FormatBool(test8088()) + ` \n`
 }
 
+func translateIPToColor(s string) string {
+	if s == "" {
+		return "X"
+	}
+	if strings.Contains(s, myIPWithTimeout()) {
+		return "B"
+	} else {
+		return "G"
+	}
+}
+
 func extractIPFromID4ResultsString(s string) string {
 	//Temporary function to read a field (Status) from a JSON string, e.g.
 	//  {"Results":1,"Status":"52.88.226.0"}
@@ -228,29 +239,11 @@ func extractIPFromID4ResultsString(s string) string {
 	return r
 }
 
-
 func stringOfDotColor() string {
 	s := ""
 	for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
-		/*
-		   if myIPWithTimeout() == `52.88.226.0` {
-		     s += "B"
-		   } else {
-		     s += "G"
-		   }
-		*/
-		//   if clusterIPs[0] == "" {
-		fmt.Println(q[i].id4)
-		ix := strings.Index(q[i].id4, `"Status":"`)
-		if ix != -1 {
-			fmt.Println(q[i].id4[ix+len(`"Status":"`) : len(q[i].id4)-len(`"}`)])
-		}
-fmt.Println(extractIPFromID4ResultsString(q[i].id4))
-		if strings.Contains(q[i].id4, myIPWithTimeout()) {
-			s += "B"
-		} else {
-			s += "G"
-		}
+
+		s += translateIPToColor(extractIPFromID4ResultsString(q[i].id4))
 	}
 	return s
 }
