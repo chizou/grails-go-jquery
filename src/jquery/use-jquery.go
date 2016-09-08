@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const NUM_COLORFUL_DISPLAY_DOTS = 16 //100
+const NUM_COLORFUL_DISPLAY_DOTS = 100 //16
 var q [NUM_COLORFUL_DISPLAY_DOTS]*TestVector
 var qhealth = NewHealthArray() //*HealthArray
 var containers []string
@@ -136,8 +136,9 @@ func Work(w http.ResponseWriter, r *http.Request) {
 	} else {
 		piazzaBox = myIPWithTimeout()
 	}
-	//piazzaBox := /*(params.containers) ?: */ myIPWithTimeout()
-	externalUserService := myIPWithTimeout()
+	externalUserService := `52.33.20.87` //myIPWithTimeout()
+
+
 	workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
 
 	//work() is invoked from the gsp page each time the browser is refreshed.
@@ -147,6 +148,15 @@ func Work(w http.ResponseWriter, r *http.Request) {
 	workers++
 	iamworker := workers
 	for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
+
+	myrand := rand.Intn(2)
+	fmt.Println(myrand)
+	if myrand == 0 {
+		externalUserService = `52.88.140.188`
+	} else {
+		externalUserService = `54.68.64.105`
+	}
+
 		q[i] = NewTestVector(piazzaBox, externalUserService)
 	}
 
@@ -331,10 +341,10 @@ func Home(w http.ResponseWriter, r *http.Request) {
    r = foox.dotStatus
    t = foox.dotDuration
    v = foox.squareHealth
-   paper.text(800, 400, v);
+   //paper.text(800, 400, v);
    w = foox.dotCompletion
    x = foox.dotColor
-   paper.text(200, 400, w);
+   //paper.text(200, 400, w);
    var THROWAWAY_BR_CHARS = 0
    var ROWS_PER_SQUARE = Math.sqrt(r.length) //10
    var COLS_PER_SQUARE = ROWS_PER_SQUARE
