@@ -747,30 +747,8 @@ func main() {
 	mux.HandleFunc("/", home)
 	mux.HandleFunc("/greentimerwork", work)
 	mux.HandleFunc("/status", greenstatus)
-	mux.HandleFunc("/external", external)
+	mux.HandleFunc("/external", simulatedExternalUserService)
 	http.ListenAndServe(":8077", mux)
-}
-
-
-type mydata struct {
-	Results int
-	Status  string
-}
-
-func external(w http.ResponseWriter, r *http.Request) {
-	//when creating this function as truly external (i.e. separate
-	//from the Green Dot program, be sure to grab myIPWithTImeout()
-
-	//rand.Seed(time.Now().Unix())
-	t := rand.Intn(16)
-	time.Sleep(time.Second * time.Duration(t))
-	p := mydata{t, myIPWithTimeout() /*"Nothing meaningful"*/}
-	b2, err2 := json.Marshal(p)
-	if err2 != nil {
-		//do something
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(b2)
 }
 /*
    def dots() {
