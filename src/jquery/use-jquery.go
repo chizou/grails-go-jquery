@@ -108,25 +108,13 @@ func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 }
 
 func translateIPToColor(s string) string {
-	if s == "" {
-		return "X"
+	if s == eusips[0] {
+		return "G"
 	}
-
-	//we do have an external result and its IP
-	//this should be written as a smarter hash function
-	if clusterIPs[0] == "" {
-		clusterIPs[0] = s
-		fmt.Println("clusterIPs[0] is now " + s)
-	}
-	if clusterIPs[0] != "" && clusterIPs[0] != s && clusterIPs[1] == "" {
-		clusterIPs[1] = s
-		fmt.Println("clusterIPs[1] is now " + s)
-	}
-
-	if s == clusterIPs[0] {
+	if s == eusips[1] {
 		return "B"
 	}
-	return "G"
+	return "X"
 }
 
 func extractIPFromID4ResultsString(s string) string {

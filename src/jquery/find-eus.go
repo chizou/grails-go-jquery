@@ -3,15 +3,16 @@ package main
 import (
 	"math/rand"
 )
+var eusips []string
 
-func askSwarmForEUSIPs() []string {
+func askSwarmForEUSIPs() {
 	//external user service IPs
-	return []string{`52.88.140.188`,`54.68.64.105`}
+	eusips = []string{`52.88.140.188`,`54.68.64.105`}
 }
 
 func randomExternalUserService() string {
-	var eus = askSwarmForEUSIPs()
-	r := rand.Intn(len(eus))
-	return eus[r]
+	askSwarmForEUSIPs()
+	r := rand.Intn(len(eusips))
+	return eusips[r]
 }
 
