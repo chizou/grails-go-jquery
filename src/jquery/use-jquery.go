@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -119,6 +118,7 @@ func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 	}
 	return s
 }
+/*
 func stringOfDotCompletionLong() string {
 	return `my IP: ` + myIPWithTimeout() + `\n` +
 		`nexus: ` + strconv.FormatBool(testPort(`8079`,`Nexus`)) + ` \n` +
@@ -128,7 +128,7 @@ func stringOfDotCompletionLong() string {
 		`access: ` + strconv.FormatBool(testPort(`8085`,`pz-access`)) + ` \n` +
 		`servicecontroller: ` + strconv.FormatBool(testPort(`8088`,`Piazza Service Controller`)) + ` \n`
 }
-
+*/
 func translateIPToColor(s string) string {
 	if s == "" {
 		return "X"
@@ -206,9 +206,7 @@ func home(w http.ResponseWriter, r *http.Request) {
    t = foox.dotDuration
    v = foox.squareHealth
    paper.text(800, 400, v);
-   w = foox.dotCompletion
    x = foox.dotColor
-   //paper.text(200, 400, w);
    var THROWAWAY_BR_CHARS = 0
    var ROWS_PER_SQUARE = Math.sqrt(r.length) //10
    var COLS_PER_SQUARE = ROWS_PER_SQUARE
@@ -305,27 +303,23 @@ func home(w http.ResponseWriter, r *http.Request) {
 func greenstatus(w http.ResponseWriter, r *http.Request) {
 	var s1 string
 	var s2 string
-	var s3 string
 	var s4 string
 	var s5 string
 	if q[0] == nil {
 		s1 = `1124012411241124`
 		s2 = `1122331122331122`
-		s3 = `hello`
 		s4 = `hello`
 		s5 = `hello`
 	} else {
 		s1 = stringOfDotStatusEachRepresentsAPiazzaJob()
 		s2 = stringOfDotDurationEachRepresentsAPiazzaJob()
-		s3 = stringOfDotCompletionLong()
 		s4 = statusString(qhealth)
 		s5 = stringOfDotColor()
 	}
 	s := `{"dotStatus":"` + s1 + `",` +
 		`"dotDuration":"` + s2 + `",` +
 		`"squareHealth":"` + s4 + `",` +
-		`"dotColor":"` + s5 + `",` +
-		`"dotCompletion":"` + s3 + `"}`
+		`"dotColor":"` + s5 + `"}`
 
 	byu := []byte(s)
 	w.Write(byu)
