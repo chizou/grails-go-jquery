@@ -10,13 +10,9 @@ import (
 )
 
 const numColorfulDisplayDots = 100 //16
-var q [numColorfulDisplayDots]*testVector
+var q [numColorfulDisplayDots] *testVector
 var qhealth = newHealthArray()
 var containers []string
-
-const maxClusterNodes = 2
-
-var clusterIPs [maxClusterNodes]string
 
 func myIPWithTimeout() string {
 	timeout := time.Duration(3 * time.Second)
@@ -507,12 +503,8 @@ func main() {
 
 /*
    def dots() {
-       piazzaBox = (params.containers) ?: myIP()
-       externalUserService = myIP()
    }
    def zdots() {
-       piazzaBox = (params.containers) ?: myIP()
-       externalUserService = myIP()
        zwork()
        string()
    }
