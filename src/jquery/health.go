@@ -55,10 +55,6 @@ func testPort(port string, contains string) bool {
 func statusString(qhealth *healthArray) string {
 	s := ""
 	if qhealth != nil {
-		//For healthy services, return a random number (because their
-		//continual updating indicates that monitoring activity is
-		//taking place). That eliminates the need to create a fancy
-		//page GUI design.
 		if qhealth.port8079 == false {
 			s += "nexus?"
 		}

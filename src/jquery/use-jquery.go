@@ -119,14 +119,6 @@ func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 	}
 	return s
 }
-/*
-func test8079() bool { return testPort(`8079`,`Nexus`) }
-func test8081() bool { return testPort(`8081`,`pz-gateway`) }
-func test8083() bool { return testPort(`8083`,`pz-jobmanager`) }
-func test8084() bool { return testPort(`8084`,`Loader`) }
-func test8085() bool { return testPort(`8085`,`pz-access`) }
-func test8088() bool { return testPort(`8088`,`Piazza Service Controller`) }
-*/
 func stringOfDotCompletionLong() string {
 	return `my IP: ` + myIPWithTimeout() + `\n` +
 		`nexus: ` + strconv.FormatBool(testPort(`8079`,`Nexus`)) + ` \n` +
@@ -191,13 +183,6 @@ func stringOfDotCompletion() string {
 func booleanOfDotCompletion() bool {
 	return stringOfDotStatusEachRepresentsAPiazzaJob() == strings.Repeat("4", numColorfulDisplayDots)
 }
-
-/*
-you get a bag of $1000, how would you spend it?
-concert, sporting event, dancing
-tall hotel from your travel agent, you go up, what do you see?
-if you couldn't get hurt, what extreme activity would you try?
-*/
 
 func home(w http.ResponseWriter, r *http.Request) {
 	containers = r.URL.Query()["containers"]
