@@ -20,101 +20,7 @@ const maxClusterNodes = 2
 
 var clusterIPs [maxClusterNodes]string
 
-type healthArray struct {
-	myip     string
-	port8079 bool
-	port8081 bool
-	port8083 bool
-	port8084 bool
-	port8085 bool
-	port8088 bool
-}
 
-func test8079() bool {
-	timeout := time.Duration(3 * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	resp, err := client.Get("http://localhost:8079")
-	if err != nil {
-		fmt.Println("Something went wrong for 8079")
-		return false
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	return strings.Contains(string(body), `Nexus`)
-}
-
-func test8081() bool {
-	timeout := time.Duration(3 * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	resp, err := client.Get("http://localhost:8081")
-	if err != nil {
-		fmt.Println("Something went wrong for 8081")
-		return false
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	return strings.Contains(string(body), `pz-gateway`)
-}
-func test8083() bool {
-	timeout := time.Duration(3 * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	resp, err := client.Get("http://localhost:8083")
-	if err != nil {
-		fmt.Println("Something went wrong for 8083")
-		return false
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	return strings.Contains(string(body), `pz-jobmanager`)
-}
-func test8084() bool {
-	timeout := time.Duration(3 * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	resp, err := client.Get("http://localhost:8084")
-	if err != nil {
-		fmt.Println("Something went wrong for 8084")
-		return false
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	return strings.Contains(string(body), `Loader`)
-}
-func test8085() bool {
-	timeout := time.Duration(3 * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	resp, err := client.Get("http://localhost:8085")
-	if err != nil {
-		fmt.Println("Something went wrong for 8085")
-		return false
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	return strings.Contains(string(body), `pz-access`)
-}
-func test8088() bool {
-	timeout := time.Duration(3 * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	resp, err := client.Get("http://localhost:8088")
-	if err != nil {
-		fmt.Println("Something went wrong for 8088")
-		return false
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	return strings.Contains(string(body), `Piazza Service Controller`)
-}
 func myIPWithTimeout() string {
 	timeout := time.Duration(3 * time.Second)
 	client := http.Client{
@@ -164,7 +70,7 @@ func work(w http.ResponseWriter, r *http.Request) {
 		if iamworker == workers && !booleanOfDotCompletion() {
 			var healthCheckServicesEverySoOften = 10
 			if j%healthCheckServicesEverySoOften == 0 {
-				qhealth = newHealthArray() //replace this method to update a singleton not New
+				qhealth = updateHealthArray(*qhealth)
 			}
 			for i := 0; i < numColorfulDisplayDots; i++ {
 				q[i] = nextStep(*q[i])
@@ -213,15 +119,22 @@ func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 	}
 	return s
 }
-
+/*
+func test8079() bool { return testPort(`8079`,`Nexus`) }
+func test8081() bool { return testPort(`8081`,`pz-gateway`) }
+func test8083() bool { return testPort(`8083`,`pz-jobmanager`) }
+func test8084() bool { return testPort(`8084`,`Loader`) }
+func test8085() bool { return testPort(`8085`,`pz-access`) }
+func test8088() bool { return testPort(`8088`,`Piazza Service Controller`) }
+*/
 func stringOfDotCompletionLong() string {
 	return `my IP: ` + myIPWithTimeout() + `\n` +
-		`nexus: ` + strconv.FormatBool(test8079()) + ` \n` +
-		`gateway: ` + strconv.FormatBool(test8081()) + ` \n` +
-		`jobmanager: ` + strconv.FormatBool(test8083()) + ` \n` +
-		`Loader: ` + strconv.FormatBool(test8084()) + ` \n` +
-		`access: ` + strconv.FormatBool(test8085()) + ` \n` +
-		`servicecontroller: ` + strconv.FormatBool(test8088()) + ` \n`
+		`nexus: ` + strconv.FormatBool(testPort(`8079`,`Nexus`)) + ` \n` +
+		`gateway: ` + strconv.FormatBool(testPort(`8081`,`pz-gateway`)) + ` \n` +
+		`jobmanager: ` + strconv.FormatBool(testPort(`8083`,`pz-jobmanager`)) + ` \n` +
+		`Loader: ` + strconv.FormatBool(testPort(`8084`,`Loader`)) + ` \n` +
+		`access: ` + strconv.FormatBool(testPort(`8085`,`pz-access`)) + ` \n` +
+		`servicecontroller: ` + strconv.FormatBool(testPort(`8088`,`Piazza Service Controller`)) + ` \n`
 }
 
 func translateIPToColor(s string) string {
@@ -279,36 +192,6 @@ func booleanOfDotCompletion() bool {
 	return stringOfDotStatusEachRepresentsAPiazzaJob() == strings.Repeat("4", numColorfulDisplayDots)
 }
 
-func stringOfSquareHealthEachRepresentsAContainerOrProcess() string {
-	var s string
-
-	if qhealth != nil {
-		//For healthy services, return a random number (because their
-		//continual updating indicates that monitoring activity is
-		//taking place). That eliminates the need to create a fancy
-		//page GUI design.
-		if qhealth.port8079 == false {
-			s += "nexus?"
-		}
-		if qhealth.port8081 == false {
-			s += "gateway?"
-		}
-		if qhealth.port8083 == false {
-			s += "jobmanager?"
-		}
-		if qhealth.port8084 == false {
-			s += "ingest?"
-		}
-		if qhealth.port8085 == false {
-			s += "access?"
-		}
-		if qhealth.port8088 == false {
-			s += "servicecontroller?"
-		}
-	}
-	return s
-}
-
 /*
 you get a bag of $1000, how would you spend it?
 concert, sporting event, dancing
@@ -337,7 +220,7 @@ func home(w http.ResponseWriter, r *http.Request) {
    r = foox.dotStatus
    t = foox.dotDuration
    v = foox.squareHealth
-   //paper.text(800, 400, v);
+   paper.text(800, 400, v);
    w = foox.dotCompletion
    x = foox.dotColor
    //paper.text(200, 400, w);
@@ -450,7 +333,7 @@ func greenstatus(w http.ResponseWriter, r *http.Request) {
 		s1 = stringOfDotStatusEachRepresentsAPiazzaJob()
 		s2 = stringOfDotDurationEachRepresentsAPiazzaJob()
 		s3 = stringOfDotCompletionLong()
-		s4 = stringOfSquareHealthEachRepresentsAContainerOrProcess()
+		s4 = statusString(qhealth)
 		s5 = stringOfDotColor()
 	}
 	s := `{"dotStatus":"` + s1 + `",` +
@@ -702,16 +585,7 @@ func testVectorStatus(p *testVector) string {
 	return "0"
 }
 
-func newHealthArray() *healthArray {
-	p := new(healthArray)
-	p.port8079 = test8079()
-	p.port8081 = test8081()
-	p.port8083 = test8083()
-	p.port8084 = test8084()
-	p.port8085 = test8085()
-	p.port8088 = test8088()
-	return p
-}
+
 
 func main() {
 	mux := http.NewServeMux()
