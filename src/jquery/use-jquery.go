@@ -384,12 +384,6 @@ func nextStep(p testVector) *testVector {
 }
 
 func pz1curl(p testVector, body2 string) string {
-	/* s/m: reinstate these four lines
-	   timeout := time.Duration(3 * time.Second)
-	   client := http.Client {
-	       Timeout: timeout,
-	   }
-	*/
 
 	body := strings.NewReader(body2)
 	req, err := http.NewRequest("POST", "http://"+p.piazzaPrimeBox+":8081/service", body)
@@ -421,13 +415,6 @@ func pz1(p testVector) string {
 }
 
 func pz2curl(p testVector, body2 string) string {
-	/* s/m: reinstate these four lines
-	   timeout := time.Duration(3 * time.Second)
-	   client := http.Client {
-	       Timeout: timeout,
-	   }
-	*/
-
 	body := strings.NewReader(body2)
 	req, err := http.NewRequest("POST", "http://"+p.piazzaPrimeBox+":8081/job", body)
 	if err != nil {
@@ -459,13 +446,6 @@ func pz2(p testVector) string {
 }
 
 func pz3curl(p testVector, body2 string) string {
-	/* s/m: reinstate these four lines
-	   timeout := time.Duration(3 * time.Second)
-	   client := http.Client {
-	       Timeout: timeout,
-	   }
-	*/
-
 	req, err := http.NewRequest("GET", "http://"+p.piazzaPrimeBox+":8081/job/"+p.id2, nil)
 	if err != nil {
 	}
@@ -501,13 +481,6 @@ func pz3(p testVector) string {
 }
 
 func pz4curl(p testVector, body2 string) string {
-	/* s/m: reinstate these four lines
-	   timeout := time.Duration(3 * time.Second)
-	   client := http.Client {
-	       Timeout: timeout,
-	   }
-	*/
-
 	temp := "http://" + p.piazzaPrimeBox + ":8081/data/" + p.id3
 	req, err := http.NewRequest("GET", temp, nil)
 	if err != nil {
@@ -538,13 +511,6 @@ func pz4curl(p testVector, body2 string) string {
 	result := data["dataType"].(map[string]interface{})
 	foo := result["content"]
 	return foo.(string)
-}
-
-func transformExternalIPtoDisplayColor(pz4result string) string {
-	if pz4result != "" {
-		return "G"
-	}
-	return "B"
 }
 
 func pz4(p testVector) string {
@@ -593,5 +559,11 @@ func main() {
    }
    def string() {
        render stringOfDotStatusEachRepresentsAPiazzaJob() + '\n'
+   }
+*/
+/* s/m: reinstate these four lines into pz1curl,...pz4curl
+   timeout := time.Duration(3 * time.Second)
+   client := http.Client {
+       Timeout: timeout,
    }
 */
