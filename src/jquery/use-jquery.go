@@ -12,54 +12,6 @@ var q [numColorfulDisplayDots] *testVector
 var qhealth = newHealthArray()
 var containers []string
 
-func myIPWithTimeout() string {
-	timeout := time.Duration(3 * time.Second)
-	client := http.Client{
-		Timeout: timeout,
-	}
-	resp, err := client.Get("http://169.254.169.254/latest/meta-data/public-ipv4")
-	if err != nil {
-		fmt.Println("Something went wrong in myIPWithTimeout")
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	return string(body)
-}
-
-func work(w http.ResponseWriter, r *http.Request) {
-	var piazzaBox string
-	if containers != nil {
-		piazzaBox = containers[0]
-	} else {
-		piazzaBox = myIPWithTimeout()
-	}
-
-	workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
-
-	//work() is invoked from the gsp page each time the browser is refreshed.
-	//we don't want multiple workers, so each worker gets a worker number.
-	//if the worker number doesn't match the number of workers, then
-	//the worker exits.
-	workers++
-	iamworker := workers
-	for i := 0; i < numColorfulDisplayDots; i++ {
-		q[i] = newTestVector(piazzaBox, randomExternalUserService())
-	}
-
-	var maxIterationToCallTestVector = 64000
-	for j := 0; j < maxIterationToCallTestVector; j++ {
-		if iamworker == workers && !booleanOfDotCompletion() {
-			var healthCheckServicesEverySoOften = 10
-			if j%healthCheckServicesEverySoOften == 0 {
-				qhealth = updateHealthArray(*qhealth)
-			}
-			for i := 0; i < numColorfulDisplayDots; i++ {
-				q[i] = nextStep(*q[i])
-			}
-		}
-	}
-}
-
 func home(w http.ResponseWriter, r *http.Request) {
 	containers = r.URL.Query()["containers"]
 
@@ -157,7 +109,7 @@ func home(w http.ResponseWriter, r *http.Request) {
   },'html');
  }
 
- $.post('greentimerwork', {}, function(r) {
+ $.post('work', {}, function(r) {
   //$('#workresults').html('This is urlBar.gsps work plus work result: ' + r);
  },'html');
 
@@ -176,7 +128,55 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func greenstatus(w http.ResponseWriter, r *http.Request) {
+func work(w http.ResponseWriter, r *http.Request) {
+	var piazzaBox string
+	if containers != nil {
+		piazzaBox = containers[0]
+	} else {
+		piazzaBox = myIPWithTimeout()
+	}
+
+	workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
+
+	//work() is invoked from the gsp page each time the browser is refreshed.
+	//we don't want multiple workers, so each worker gets a worker number.
+	//if the worker number doesn't match the number of workers, then
+	//the worker exits.
+	workers++
+	iamworker := workers
+	for i := 0; i < numColorfulDisplayDots; i++ {
+		q[i] = newTestVector(piazzaBox, randomExternalUserService())
+	}
+
+	var maxIterationToCallTestVector = 64000
+	for j := 0; j < maxIterationToCallTestVector; j++ {
+		if iamworker == workers && !booleanOfDotCompletion() {
+			var healthCheckServicesEverySoOften = 10
+			if j%healthCheckServicesEverySoOften == 0 {
+				qhealth = updateHealthArray(*qhealth)
+			}
+			for i := 0; i < numColorfulDisplayDots; i++ {
+				q[i] = nextStep(*q[i])
+			}
+		}
+	}
+}
+
+func myIPWithTimeout() string {
+	timeout := time.Duration(3 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	resp, err := client.Get("http://169.254.169.254/latest/meta-data/public-ipv4")
+	if err != nil {
+		fmt.Println("Something went wrong in myIPWithTimeout")
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	return string(body)
+}
+
+func status(w http.ResponseWriter, r *http.Request) {
 	var s1 string
 	var s2 string
 	var s4 string
@@ -204,8 +204,8 @@ func greenstatus(w http.ResponseWriter, r *http.Request) {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)
-	mux.HandleFunc("/greentimerwork", work)
-	mux.HandleFunc("/status", greenstatus)
+	mux.HandleFunc("/work", work)
+	mux.HandleFunc("/status", status)
 	mux.HandleFunc("/external", simulatedExternalUserService)
 	http.ListenAndServe(":8077", mux)
 }
