@@ -11,16 +11,16 @@ import (
 	"time"
 )
 
-const NUM_COLORFUL_DISPLAY_DOTS = 100 //16
-var q [NUM_COLORFUL_DISPLAY_DOTS]*TestVector
-var qhealth = NewHealthArray() //*HealthArray
+const numColorfulDisplayDots = 100 //16
+var q [numColorfulDisplayDots]*testVector
+var qhealth = newHealthArray() 
 var containers []string
 
-const MAX_CLUSTER_NODES = 2
+const maxClusterNodes = 2
 
-var clusterIPs [MAX_CLUSTER_NODES]string
+var clusterIPs [maxClusterNodes]string
 
-type HealthArray struct {
+type healthArray struct {
 	myip     string
 	port8079 bool
 	port8081 bool
@@ -129,7 +129,7 @@ func myIPWithTimeout() string {
 	return string(body)
 }
 
-func Work(w http.ResponseWriter, r *http.Request) {
+func work(w http.ResponseWriter, r *http.Request) {
 	var piazzaBox string
 	if containers != nil {
 		piazzaBox = containers[0]
@@ -147,27 +147,26 @@ func Work(w http.ResponseWriter, r *http.Request) {
 	//the worker exits.
 	workers++
 	iamworker := workers
-	for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
+	for i := 0; i < numColorfulDisplayDots; i++ {
 
 	myrand := rand.Intn(2)
-	fmt.Println(myrand)
 	if myrand == 0 {
 		externalUserService = `52.88.140.188`
 	} else {
 		externalUserService = `54.68.64.105`
 	}
 
-		q[i] = NewTestVector(piazzaBox, externalUserService)
+		q[i] = newTestVector(piazzaBox, externalUserService)
 	}
 
-	var MAX_ITERATION_TO_CALL_TEST_VECTOR = 64000
-	for j := 0; j < MAX_ITERATION_TO_CALL_TEST_VECTOR; j++ {
+	var maxIterationToCallTestVector = 64000
+	for j := 0; j < maxIterationToCallTestVector; j++ {
 		if iamworker == workers && !booleanOfDotCompletion() {
-			var HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN = 10
-			if j%HEALTH_CHECK_SERVICES_EVERY_SO_OFTEN == 0 {
-				qhealth = NewHealthArray() //replace this method to update a singleton not New
+			var healthCheckServicesEverySoOften = 10
+			if j%healthCheckServicesEverySoOften == 0 {
+				qhealth = newHealthArray() //replace this method to update a singleton not New
 			}
-			for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
+			for i := 0; i < numColorfulDisplayDots; i++ {
 				q[i] = nextStep(*q[i])
 			}
 		}
@@ -176,15 +175,15 @@ func Work(w http.ResponseWriter, r *http.Request) {
 
 func stringOfDotStatusEachRepresentsAPiazzaJob() string {
 	s := ""
-	for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
-		s += TestVectorStatus(q[i])
+	for i := 0; i < numColorfulDisplayDots; i++ {
+		s += testVectorStatus(q[i])
 	}
 	return s
 }
 
 func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 	s := ""
-	for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
+	for i := 0; i < numColorfulDisplayDots; i++ {
 		temp := "5"
 		if q[i].id4 != "" {
 			var dat map[string]interface{}
@@ -244,9 +243,8 @@ func translateIPToColor(s string) string {
 	//if strings.Contains(s, myIPWithTimeout()) {
 	if s == clusterIPs[0] {
 		return "B"
-	} else {
-		return "G"
-	}
+	} 
+	return "G"
 }
 
 func extractIPFromID4ResultsString(s string) string {
@@ -264,7 +262,7 @@ func extractIPFromID4ResultsString(s string) string {
 
 func stringOfDotColor() string {
 	s := ""
-	for i := 0; i < NUM_COLORFUL_DISPLAY_DOTS; i++ {
+	for i := 0; i < numColorfulDisplayDots; i++ {
 
 		s += translateIPToColor(extractIPFromID4ResultsString(q[i].id4))
 	}
@@ -274,13 +272,12 @@ func stringOfDotColor() string {
 func stringOfDotCompletion() string {
 	if booleanOfDotCompletion() {
 		return "active... completed"
-	} else {
-		return "active"
 	}
+	return "active"
 }
 
 func booleanOfDotCompletion() bool {
-	return stringOfDotStatusEachRepresentsAPiazzaJob() == strings.Repeat("4", NUM_COLORFUL_DISPLAY_DOTS)
+	return stringOfDotStatusEachRepresentsAPiazzaJob() == strings.Repeat("4", numColorfulDisplayDots)
 }
 
 func stringOfSquareHealthEachRepresentsAContainerOrProcess() string {
@@ -320,7 +317,7 @@ tall hotel from your travel agent, you go up, what do you see?
 if you couldn't get hurt, what extreme activity would you try?
 */
 
-func Home(w http.ResponseWriter, r *http.Request) {
+func home(w http.ResponseWriter, r *http.Request) {
 	containers = r.URL.Query()["containers"]
 
 	html := `<head>	
@@ -467,20 +464,20 @@ func greenstatus(w http.ResponseWriter, r *http.Request) {
 	w.Write(byu)
 }
 
-type TestVector struct {
-	EXTERNAL_USER_SERVICE string
-	PIAZZA_PRIME_BOX      string
+type testVector struct {
+	externalUserService string
+	piazzaPrimeBox      string
 	id1                   string
 	id2                   string
 	id3                   string
 	id4                   string
 }
 
-func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
-	p := new(TestVector)
-	//p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8078/green/timer/external"
-	p.EXTERNAL_USER_SERVICE = "http://" + externalUserService + ":8077/external"
-	p.PIAZZA_PRIME_BOX = piazzaBox
+func newTestVector(piazzaBox string, externalUserService string) *testVector {
+	p := new(testVector)
+	//p.externalUserService = "http://" + externalUserService + ":8078/green/timer/external"
+	p.externalUserService = "http://" + externalUserService + ":8077/external"
+	p.piazzaPrimeBox = piazzaBox
 	p.id1 = ""
 	p.id2 = ""
 	p.id3 = ""
@@ -488,7 +485,7 @@ func NewTestVector(piazzaBox string, externalUserService string) *TestVector {
 	return p
 }
 
-func nextStep(p TestVector) *TestVector {
+func nextStep(p testVector) *testVector {
 	if p.id1 == "" {
 		p.id1 = pz1(p)
 		if p.id1 == "" {
@@ -520,7 +517,7 @@ func nextStep(p TestVector) *TestVector {
 	return &p
 }
 
-func pz1curl(p TestVector, body2 string) string {
+func pz1curl(p testVector, body2 string) string {
 	/* s/m: reinstate these four lines
 	   timeout := time.Duration(3 * time.Second)
 	   client := http.Client {
@@ -531,7 +528,7 @@ func pz1curl(p TestVector, body2 string) string {
 	// Generated by curl-to-Go: https://mholt.github.io/curl-to-go
 
 	body := strings.NewReader(body2)
-	req, err := http.NewRequest("POST", "http://"+p.PIAZZA_PRIME_BOX+":8081/service", body)
+	req, err := http.NewRequest("POST", "http://"+p.piazzaPrimeBox+":8081/service", body)
 	if err != nil {
 		// handle err
 	}
@@ -555,15 +552,15 @@ func pz1curl(p TestVector, body2 string) string {
 	return foo.(string)
 }
 
-func pz1(p TestVector) string {
+func pz1(p testVector) string {
 	body2 := `{"url":"REPLACEME","method":"GET","contractUrl":"REPLACEME/","resourceMetadata":{"name":"Hello World Test","description":"Hello world test","classType":{"classification":"UNCLASSIFIED"}}}`
-	body2 = strings.Replace(body2, "REPLACEME", p.EXTERNAL_USER_SERVICE, -1)
+	body2 = strings.Replace(body2, "REPLACEME", p.externalUserService, -1)
 	pz1curlresult := pz1curl(p, body2)
 	//fmt.Println(pz1curlresult)
 	return pz1curlresult
 }
 
-func pz2curl(p TestVector, body2 string) string {
+func pz2curl(p testVector, body2 string) string {
 	/* s/m: reinstate these four lines
 	   timeout := time.Duration(3 * time.Second)
 	   client := http.Client {
@@ -574,7 +571,7 @@ func pz2curl(p TestVector, body2 string) string {
 	// Generated by curl-to-Go: https://mholt.github.io/curl-to-go
 
 	body := strings.NewReader(body2)
-	req, err := http.NewRequest("POST", "http://"+p.PIAZZA_PRIME_BOX+":8081/job", body)
+	req, err := http.NewRequest("POST", "http://"+p.piazzaPrimeBox+":8081/job", body)
 	if err != nil {
 		// handle err
 	}
@@ -599,7 +596,7 @@ func pz2curl(p TestVector, body2 string) string {
 	return foo.(string)
 }
 
-func pz2(p TestVector) string {
+func pz2(p testVector) string {
 	body2 := `{"type":"execute-service","data":{"serviceId":"REPLACEME","dataInputs":{},"dataOutput":[{"mimeType":"application/json","type":"text"}]}}`
 	body2 = strings.Replace(body2, "REPLACEME", p.id1, -1)
 	pz2curlresult := pz2curl(p, body2)
@@ -607,7 +604,7 @@ func pz2(p TestVector) string {
 	return pz2curlresult
 }
 
-func pz3curl(p TestVector, body2 string) string {
+func pz3curl(p testVector, body2 string) string {
 	/* s/m: reinstate these four lines
 	   timeout := time.Duration(3 * time.Second)
 	   client := http.Client {
@@ -617,7 +614,7 @@ func pz3curl(p TestVector, body2 string) string {
 
 	// Generated by curl-to-Go: https://mholt.github.io/curl-to-go
 
-	req, err := http.NewRequest("GET", "http://"+p.PIAZZA_PRIME_BOX+":8081/job/"+p.id2, nil)
+	req, err := http.NewRequest("GET", "http://"+p.piazzaPrimeBox+":8081/job/"+p.id2, nil)
 	if err != nil {
 		// handle err
 	}
@@ -648,7 +645,7 @@ func pz3curl(p TestVector, body2 string) string {
 	return foo.(string)
 }
 
-func pz3(p TestVector) string {
+func pz3(p testVector) string {
 	body2 := `{"type":"execute-service","data":{"serviceId":"REPLACEME","dataInputs":{},"dataOutput":[{"mimeType":"application/json","type":"text"}]}}`
 	body2 = strings.Replace(body2, "REPLACEME", p.id2, -1)
 	pz3curlresult := pz3curl(p, body2)
@@ -656,7 +653,7 @@ func pz3(p TestVector) string {
 	return pz3curlresult
 }
 
-func pz4curl(p TestVector, body2 string) string {
+func pz4curl(p testVector, body2 string) string {
 	/* s/m: reinstate these four lines
 	   timeout := time.Duration(3 * time.Second)
 	   client := http.Client {
@@ -666,7 +663,7 @@ func pz4curl(p TestVector, body2 string) string {
 
 	// Generated by curl-to-Go: https://mholt.github.io/curl-to-go
 
-	temp := "http://" + p.PIAZZA_PRIME_BOX + ":8081/data/" + p.id3
+	temp := "http://" + p.piazzaPrimeBox + ":8081/data/" + p.id3
 	//fmt.Println(temp)
 	req, err := http.NewRequest("GET", temp, nil)
 	if err != nil {
@@ -705,12 +702,11 @@ func pz4curl(p TestVector, body2 string) string {
 func transformExternalIPtoDisplayColor(pz4result string) string {
 	if pz4result /*.status*/ != "" {
 		return "G"
-	} else {
-		return "B"
 	}
+	return "B"
 }
 
-func pz4(p TestVector) string {
+func pz4(p testVector) string {
 	body2 := `{"type":"execute-service","data":{"serviceId":"REPLACEME","dataInputs":{},"dataOutput":[{"mimeType":"application/json","type":"text"}]}}`
 	body2 = strings.Replace(body2, "REPLACEME", p.id3, -1)
 	pz4curlresult := pz4curl(p, body2)
@@ -718,7 +714,7 @@ func pz4(p TestVector) string {
 	return pz4curlresult
 }
 
-func TestVectorStatus(p *TestVector) string {
+func testVectorStatus(p *testVector) string {
 	if p.id4 != "" {
 		return "4"
 	}
@@ -734,8 +730,8 @@ func TestVectorStatus(p *TestVector) string {
 	return "0"
 }
 
-func NewHealthArray() *HealthArray {
-	p := new(HealthArray)
+func newHealthArray() *healthArray {
+	p := new(healthArray)
 	p.port8079 = test8079()
 	p.port8081 = test8081()
 	p.port8083 = test8083()
@@ -748,13 +744,34 @@ func NewHealthArray() *HealthArray {
 func main() {
 	//clusterIPs[0] = `60.70.80.90`
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", Home)
-	mux.HandleFunc("/greentimerwork", Work)
+	mux.HandleFunc("/", home)
+	mux.HandleFunc("/greentimerwork", work)
 	mux.HandleFunc("/status", greenstatus)
 	mux.HandleFunc("/external", external)
 	http.ListenAndServe(":8077", mux)
 }
 
+
+type mydata struct {
+	Results int
+	Status  string
+}
+
+func external(w http.ResponseWriter, r *http.Request) {
+	//when creating this function as truly external (i.e. separate
+	//from the Green Dot program, be sure to grab myIPWithTImeout()
+
+	//rand.Seed(time.Now().Unix())
+	t := rand.Intn(16)
+	time.Sleep(time.Second * time.Duration(t))
+	p := mydata{t, myIPWithTimeout() /*"Nothing meaningful"*/}
+	b2, err2 := json.Marshal(p)
+	if err2 != nil {
+		//do something
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b2)
+}
 /*
    def dots() {
        piazzaBox = (params.containers) ?: myIP()
@@ -770,23 +787,3 @@ func main() {
        render stringOfDotStatusEachRepresentsAPiazzaJob() + '\n'
    }
 */
-type Data struct {
-	Results int
-	Status  string
-}
-
-func external(w http.ResponseWriter, r *http.Request) {
-	//when creating this function as truly external (i.e. separate
-	//from the Green Dot program, be sure to grab myIPWithTImeout()
-
-	//rand.Seed(time.Now().Unix())
-	t := rand.Intn(16)
-	time.Sleep(time.Second * time.Duration(t))
-	p := Data{t, myIPWithTimeout() /*"Nothing meaningful"*/}
-	b2, err2 := json.Marshal(p)
-	if err2 != nil {
-		//do something
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(b2)
-}
