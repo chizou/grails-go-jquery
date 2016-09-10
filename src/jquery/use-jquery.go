@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -12,13 +11,12 @@ import (
 
 const numColorfulDisplayDots = 100 //16
 var q [numColorfulDisplayDots]*testVector
-var qhealth = newHealthArray() 
+var qhealth = newHealthArray()
 var containers []string
 
 const maxClusterNodes = 2
 
 var clusterIPs [maxClusterNodes]string
-
 
 func myIPWithTimeout() string {
 	timeout := time.Duration(3 * time.Second)
@@ -41,8 +39,6 @@ func work(w http.ResponseWriter, r *http.Request) {
 	} else {
 		piazzaBox = myIPWithTimeout()
 	}
-	externalUserService := `52.33.20.87` //myIPWithTimeout()
-
 
 	workers := 0 /* for now, don't use this or multiple invocations (no go global var) */
 
@@ -53,15 +49,7 @@ func work(w http.ResponseWriter, r *http.Request) {
 	workers++
 	iamworker := workers
 	for i := 0; i < numColorfulDisplayDots; i++ {
-
-	myrand := rand.Intn(2)
-	if myrand == 0 {
-		externalUserService = `52.88.140.188`
-	} else {
-		externalUserService = `54.68.64.105`
-	}
-
-		q[i] = newTestVector(piazzaBox, externalUserService)
+		q[i] = newTestVector(piazzaBox, randomExternalUserService())
 	}
 
 	var maxIterationToCallTestVector = 64000
@@ -118,17 +106,7 @@ func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 	}
 	return s
 }
-/*
-func stringOfDotCompletionLong() string {
-	return `my IP: ` + myIPWithTimeout() + `\n` +
-		`nexus: ` + strconv.FormatBool(testPort(`8079`,`Nexus`)) + ` \n` +
-		`gateway: ` + strconv.FormatBool(testPort(`8081`,`pz-gateway`)) + ` \n` +
-		`jobmanager: ` + strconv.FormatBool(testPort(`8083`,`pz-jobmanager`)) + ` \n` +
-		`Loader: ` + strconv.FormatBool(testPort(`8084`,`Loader`)) + ` \n` +
-		`access: ` + strconv.FormatBool(testPort(`8085`,`pz-access`)) + ` \n` +
-		`servicecontroller: ` + strconv.FormatBool(testPort(`8088`,`Piazza Service Controller`)) + ` \n`
-}
-*/
+
 func translateIPToColor(s string) string {
 	if s == "" {
 		return "X"
@@ -140,14 +118,14 @@ func translateIPToColor(s string) string {
 		clusterIPs[0] = s
 		fmt.Println("clusterIPs[0] is now " + s)
 	}
-	if clusterIPs[0] != "" && clusterIPs[0]  != s && clusterIPs[1] == "" {
+	if clusterIPs[0] != "" && clusterIPs[0] != s && clusterIPs[1] == "" {
 		clusterIPs[1] = s
 		fmt.Println("clusterIPs[1] is now " + s)
 	}
 
 	if s == clusterIPs[0] {
 		return "B"
-	} 
+	}
 	return "G"
 }
 
@@ -328,10 +306,10 @@ func greenstatus(w http.ResponseWriter, r *http.Request) {
 type testVector struct {
 	externalUserService string
 	piazzaPrimeBox      string
-	id1                   string
-	id2                   string
-	id3                   string
-	id4                   string
+	id1                 string
+	id2                 string
+	id3                 string
+	id4                 string
 }
 
 func newTestVector(piazzaBox string, externalUserService string) *testVector {
@@ -530,8 +508,6 @@ func testVectorStatus(p *testVector) string {
 	return "0"
 }
 
-
-
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)
@@ -540,6 +516,7 @@ func main() {
 	mux.HandleFunc("/external", simulatedExternalUserService)
 	http.ListenAndServe(":8077", mux)
 }
+
 /*
    def dots() {
        piazzaBox = (params.containers) ?: myIP()
