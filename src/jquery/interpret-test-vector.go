@@ -35,39 +35,40 @@ func testVectorStatus(p *testVector) string {
 func stringOfDotDurationEachRepresentsAPiazzaJob() string {
 	s := ""
 	for i := 0; i < numColorfulDisplayDots; i++ {
-		temp := "5"
-		if q[i].id4 != "" {
-			var dat map[string]interface{}
-			if err3 := json.Unmarshal([]byte(q[i].id4), &dat); err3 != nil {
-				panic(err3)
-			}
-			if dat["Results"] != nil {
-				if dat["Results"].(float64) <= 16 {
-					temp = "3"
-				}
-				if dat["Results"].(float64) <= 12 {
-					temp = "2"
-				}
-				if dat["Results"].(float64) <= 8 {
-					temp = "1"
-				}
-				if dat["Results"].(float64) <= 4 {
-					temp = "0"
-				}
-				s += temp
-			} else {
-				s += temp
-			}
-		} else {
-			s += temp
-		}
+		s += parseResultsFieldFromID4(q[i].id4)
 	}
 	return s
+}
+func parseResultsFieldFromID4(id4 string) string {
+	temp := "5"
+	if id4 != "" {
+		var dat map[string]interface{}
+		if err3 := json.Unmarshal([]byte(id4), &dat); err3 != nil {
+			panic(err3)
+		}
+		if dat["Results"] != nil {
+			duration := dat["Results"].(float64)
+			if duration <= 16 {
+				temp = "3"
+			}
+			if duration <= 12 {
+				temp = "2"
+			}
+			if duration <= 8 {
+				temp = "1"
+			}
+			if duration <= 4 {
+				temp = "0"
+			}
+		}
+	}
+	return temp
 }
 func stringOfDotColor() string {
 	s := ""
 	for i := 0; i < numColorfulDisplayDots; i++ {
-		s += translateIPToColor(extractIPFromID4ResultsString(q[i].id4))
+		ip := extractIPFromID4ResultsString(q[i].id4)
+		s += translateIPToColor(ip)
 	}
 	return s
 }
@@ -83,7 +84,6 @@ func extractIPFromID4ResultsString(s string) string {
 	}
 	return r
 }
-
 
 func translateIPToColor(s string) string {
 	if s == eusips[0] {
